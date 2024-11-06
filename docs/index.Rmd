@@ -3,26 +3,42 @@ title: "Assessment"
 author: "Freya"
 date: "2024-11-01"
 output: html_document
+
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Assessing opioid replacement therapies by region 
+# Assessing opioid replacement therapies by region 
+
+Justified – understanding of the data and their context 
+Introduction 
+Key results 
+Conclusion
+References (for reason chosen research question)
+Narrative shows critical thinking
+Multiple data sources 
+Recommendations and conclusions are grounded in the data 
+Limitations of the data set discussed. Next steps suggested in terms of data that would allow for further analysis. 
+
+## Introduction 
 
 My project will analyse X, Y, Z 
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
 library(ggplot2)
 summary(cars)
 ```
 
-## Including Plots
+## Key Results 
+
+>4 plots and / or tables 
+No use of settings other than default 
+Labelled, titled plots 
+Labelled titled tables 
+Appropriate and thoughtful data visualisation with some use of non-default settings (gt)
+Faceting, multilayered plots, interactive visualisation 
 
 You can also embed plots, for example:
 
@@ -30,7 +46,13 @@ You can also embed plots, for example:
 plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Conclusion 
+
+### Recommendations from analysis 
+
+### Limitations of the dataset and suggestions for future analysis
 
 
-# This is to assess that my link is updating *correctly*
+## References 
+
+
