@@ -13,7 +13,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE)
 ```
 
 # Emergency Contraceptive Pill and Sexually Transmitted Infections
@@ -37,8 +37,8 @@ There are two types of emergency contraceptive pill prescribed by pharmacies.
 
 STIs pose a  significant public health, with recent trends showing an increase in prevalence. 
 The two most common sexually transmitted infections in Scotland are 
->* **chlamydia**, treated with *doxycylcine* or *azithromycin*  
->* **gonorrhea**, treated with *intramuscular ceftriaxone*.  
+> * **chlamydia**, treated with *doxycylcine* or *azithromycin*  
+> * **gonorrhea**, treated with *intramuscular ceftriaxone*.  
 
 
 This report explores 
@@ -153,7 +153,7 @@ Faceting, multilayered plots, interactive visualisation
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
+```{r}
 
 ```
 

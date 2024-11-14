@@ -522,42 +522,28 @@ taken within three days of unprotected sex</li>
 taken within five days of unprotected sex</li>
 </ul>
 </blockquote>
-<p>The two most common sexually transmitted infections in Scotland are
-<strong>chlamydia</strong>, treated with <em>doxycylcine</em> or
-<em>azithromycin</em> and <strong>gonorrhea</strong>, treated with
-<em>intramuscular ceftriaxone</em>.<br />
-STIs are posing a current significant public health needs, with recent
-trends showing an increase in prevalence.</p>
-<p>This report explores 1)Prescribing patterns of oral contraceptive
-pill and antibiotics across 2023 (any time trends eg University return
-dates, festivals), considering if the prescription of OCP mirrors number
-of prescriptions of antibiotics used to treat STIs 2)How OCP and
-antibiotics for STI prescriptions differ in geography comparing
-university town to a non-university town 3)Compare patterns in OCP and
-STI antibiotics prescribing during Covid-19 lockdowns - did the need for
-OCP or incidence of STI antibiotics prescription go down during
-lockdowns?</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-## ✔ purrr     1.0.2     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(janitor) </code></pre>
-<pre><code>## 
-## Attaching package: &#39;janitor&#39;
-## 
-## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     chisq.test, fisher.test</code></pre>
-<pre class="r"><code>library(gt) 
+<p>STIs pose a significant public health, with recent trends showing an
+increase in prevalence. The two most common sexually transmitted
+infections in Scotland are &gt; * <strong>chlamydia</strong>, treated
+with <em>doxycylcine</em> or <em>azithromycin</em><br />
+&gt; * <strong>gonorrhea</strong>, treated with <em>intramuscular
+ceftriaxone</em>.</p>
+<p>This report explores</p>
+<ol style="list-style-type: decimal">
+<li><p>Prescribing patterns of oral contraceptive pill and antibiotics
+across 2023 (any time trends eg University return dates, festivals),
+considering if the prescription of OCP mirrors number of prescriptions
+of antibiotics used to treat STIs</p></li>
+<li><p>How OCP and antibiotics for STI prescriptions differ in geography
+comparing university town to a non-university town</p></li>
+<li><p>Compare patterns in OCP and STI antibiotics prescribing during
+Covid-19 lockdowns - did the need for OCP or incidence of STI
+antibiotics prescription go down during lockdowns?</p></li>
+</ol>
+<pre class="r"><code>library(tidyverse)
+library(janitor) 
+library(gt) 
 library(here)</code></pre>
-<pre><code>## here() starts at C:/Data_science/B273025</code></pre>
 <p>I have chosen to look at all prescriptions from 2020 and 2023. To do
 this I downloaded the prescriptions data for each month from: <a href="https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community" class="uri">https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community</a></p>
 <p>I wanted to explore how many OCP and antibiotics for STIs were
@@ -567,124 +553,19 @@ prescibed during across 2023.</p>
 all_files_2020 &lt;- list.files(here(&quot;data&quot;,&quot;all_months_2020&quot;), pattern = &quot;csv&quot;)
 all_prescriptions_2020 &lt;- all_files_2020 %&gt;% 
   map_dfr(~read_csv(here(&quot;data&quot;,&quot;all_months_2020&quot;, .))) %&gt;% 
-  clean_names()</code></pre>
-<pre><code>## Rows: 1166682 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1144856 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1202891 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1127830 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1113184 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1127737 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1145451 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1128544 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1141062 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1134673 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1132441 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 1169050 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): HBT, BNFItemCode, BNFItemDescription, ClassOfPreparationCode
-## dbl (5): GPPractice, NumberOfPaidItems, PaidQuantity, GrossIngredientCost, P...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>all_files_2023 &lt;- list.files(here(&quot;data&quot;,&quot;all_months_2023&quot;), pattern = &quot;csv&quot;)
+  clean_names()
+
+all_files_2023 &lt;- list.files(here(&quot;data&quot;,&quot;all_months_2023&quot;), pattern = &quot;csv&quot;)
 all_prescriptions_2023 &lt;- all_files_2023 %&gt;% 
   map_dfr(~read_csv(here(&quot;data&quot;,&quot;all_months_2023&quot;, .),col_types = cols(DMDCode = col_character()))) %&gt;% 
-  clean_names()</code></pre>
-<pre><code>## Warning: The following named parsers don&#39;t match the column names: DMDCode
-## The following named parsers don&#39;t match the column names: DMDCode
-## The following named parsers don&#39;t match the column names: DMDCode
-## The following named parsers don&#39;t match the column names: DMDCode</code></pre>
-<pre class="r"><code>#why did I need to use DMDCode col_character() here?
+  clean_names()
+
+#why did I need to use DMDCode col_character() here?
 
 HB_names &lt;- read_csv(&quot;https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/652ff726-e676-4a20-abda-435b98dd7bdc/download/hb14_hb19.csv&quot;) %&gt;% 
-  clean_names()</code></pre>
-<pre><code>## Rows: 18 Columns: 5
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (3): HB, HBName, Country
-## dbl (2): HBDateEnacted, HBDateArchived
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>#full_join to add health board name to the prescriptions dataset
+  clean_names()
+
+#full_join to add health board name to the prescriptions dataset
 
 all_prescriptions_2020 &lt;- all_prescriptions_2020 %&gt;% 
   full_join(HB_names, by = c(&quot;hbt&quot; = &quot;hb&quot;)) %&gt;% 
@@ -716,27 +597,13 @@ population_data &lt;- read_csv(here(&quot;data&quot;, &quot;UV103_age_health_boa
          hb_population = Count) %&gt;% 
   filter(Age == &quot;All people&quot; &amp; Sex == &quot;All people&quot;) %&gt;% 
   select(hb_name, hb_population) %&gt;% 
-  mutate(hb_name = paste(&quot;NHS&quot;, hb_name))</code></pre>
-<pre><code>## New names:
-## • `` -&gt; `...6`</code></pre>
-<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat &lt;- vroom(...)
-##   problems(dat)</code></pre>
-<pre><code>## Rows: 3657 Columns: 6
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (4): Counting, Health Board Area 2019, Age, Sex
-## dbl (1): Count
-## lgl (1): ...6
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code># join this to the 2023 prescriptions dataset 
+  mutate(hb_name = paste(&quot;NHS&quot;, hb_name))
+
+# join this to the 2023 prescriptions dataset 
 all_prescriptions_2023 &lt;- all_prescriptions_2023 %&gt;% 
-  full_join(population_data)</code></pre>
-<pre><code>## Joining with `by = join_by(hb_name)`</code></pre>
-<pre class="r"><code>#initial exploration of dataset
+  full_join(population_data)
+
+#initial exploration of dataset
 
 OCP &lt;- all_prescriptions_2023 %&gt;% 
   filter(str_detect(bnf_item_description, &quot;LEVONO|ULIPR&quot;))
@@ -785,7 +652,7 @@ to set up citations. Chosen BMJ style as common.</p>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFzc2Vzc21lbnQiDQphdXRob3I6ICJCMjczMDI1Ig0KZGF0ZTogImByIFN5cy5EYXRlKClgIg0KYmlibGlvZ3JhcGh5OiAiLi4vem90ZXJvX2NpdGF0aW9ucy5qc29uIg0KbGluay1jaXRhdGlvbnM6IHRydWUNCm91dHB1dDogDQogIGh0bWxfZG9jdW1lbnQ6IA0KICAgIGNvZGVfZG93bmxvYWQ6IHRydWUNCiAgICB0b2M6IHRydWUNCiAgICB0aGVtZTogZmxhdGx5DQoNCi0tLQ0KDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkNCmBgYA0KDQojIEVtZXJnZW5jeSBDb250cmFjZXB0aXZlIFBpbGwgYW5kIFNleHVhbGx5IFRyYW5zbWl0dGVkIEluZmVjdGlvbnMNCg0KSnVzdGlmaWVkIOKAkyB1bmRlcnN0YW5kaW5nIG9mIHRoZSBkYXRhIGFuZCB0aGVpciBjb250ZXh0ICANCkludHJvZHVjdGlvbiAgDQpLZXkgcmVzdWx0cyAgIA0KQ29uY2x1c2lvbiANClJlZmVyZW5jZXMgKGZvciByZWFzb24gY2hvc2VuIHJlc2VhcmNoIHF1ZXN0aW9uKSAgDQpOYXJyYXRpdmUgc2hvd3MgY3JpdGljYWwgdGhpbmtpbmcgIA0KTXVsdGlwbGUgZGF0YSBzb3VyY2VzICAgDQpSZWNvbW1lbmRhdGlvbnMgYW5kIGNvbmNsdXNpb25zIGFyZSBncm91bmRlZCBpbiB0aGUgZGF0YSAgDQpMaW1pdGF0aW9ucyBvZiB0aGUgZGF0YSBzZXQgZGlzY3Vzc2VkLiBOZXh0IHN0ZXBzIHN1Z2dlc3RlZCBpbiB0ZXJtcyBvZiBkYXRhIHRoYXQgd291bGQgYWxsb3cgZm9yIGZ1cnRoZXIgYW5hbHlzaXMuICAgDQoNCiMjIEludHJvZHVjdGlvbiANCg0KVGhlcmUgYXJlIHR3byB0eXBlcyBvZiBlbWVyZ2VuY3kgY29udHJhY2VwdGl2ZSBwaWxsIHByZXNjcmliZWQgYnkgcGhhcm1hY2llcy4NCg0KPiogKipMZXZvbm9nZXN0cmVsKiogKGJyYW5kIG5hbWU6ICpMZXZvbmVsbGUqKSB0YWtlbiB3aXRoaW4gdGhyZWUgZGF5cyBvZiB1bnByb3RlY3RlZCBzZXgNCj4qICoqVWxpcHJpc3RhbCBBY2V0YXRlKiogKGJyYW5kIG5hbWU6ICplbGxhT25lKikgdGFrZW4gd2l0aGluIGZpdmUgZGF5cyBvZiB1bnByb3RlY3RlZCBzZXggIA0KDQpUaGUgdHdvIG1vc3QgY29tbW9uIHNleHVhbGx5IHRyYW5zbWl0dGVkIGluZmVjdGlvbnMgaW4gU2NvdGxhbmQgYXJlICoqY2hsYW15ZGlhKiosIHRyZWF0ZWQgd2l0aCAqZG94eWN5bGNpbmUqIG9yICpheml0aHJvbXljaW4qIGFuZCAqKmdvbm9ycmhlYSoqLCB0cmVhdGVkIHdpdGggKmludHJhbXVzY3VsYXIgY2VmdHJpYXhvbmUqLiAgDQpTVElzIGFyZSBwb3NpbmcgYSBjdXJyZW50IHNpZ25pZmljYW50IHB1YmxpYyBoZWFsdGggbmVlZHMsIHdpdGggcmVjZW50IHRyZW5kcyBzaG93aW5nIGFuIGluY3JlYXNlIGluIHByZXZhbGVuY2UuIA0KDQoNClRoaXMgcmVwb3J0IGV4cGxvcmVzIA0KMSlQcmVzY3JpYmluZyBwYXR0ZXJucyBvZiBvcmFsIGNvbnRyYWNlcHRpdmUgcGlsbCBhbmQgYW50aWJpb3RpY3MgYWNyb3NzIDIwMjMgKGFueSB0aW1lIHRyZW5kcyBlZyBVbml2ZXJzaXR5IHJldHVybiBkYXRlcywgZmVzdGl2YWxzKSwgY29uc2lkZXJpbmcgaWYgdGhlIHByZXNjcmlwdGlvbiBvZiBPQ1AgbWlycm9ycyBudW1iZXIgb2YgcHJlc2NyaXB0aW9ucyBvZiBhbnRpYmlvdGljcyB1c2VkIHRvIHRyZWF0IFNUSXMNCjIpSG93IE9DUCBhbmQgYW50aWJpb3RpY3MgZm9yIFNUSSBwcmVzY3JpcHRpb25zIGRpZmZlciBpbiBnZW9ncmFwaHkgY29tcGFyaW5nIHVuaXZlcnNpdHkgdG93biB0byBhIG5vbi11bml2ZXJzaXR5IHRvd24gDQozKUNvbXBhcmUgcGF0dGVybnMgaW4gT0NQIGFuZCBTVEkgYW50aWJpb3RpY3MgcHJlc2NyaWJpbmcgZHVyaW5nIENvdmlkLTE5IGxvY2tkb3ducyAtIGRpZCB0aGUgbmVlZCBmb3IgT0NQIG9yIGluY2lkZW5jZSBvZiBTVEkgYW50aWJpb3RpY3MgcHJlc2NyaXB0aW9uIGdvIGRvd24gZHVyaW5nIGxvY2tkb3ducz8NCg0KYGBge3J9DQpsaWJyYXJ5KHRpZHl2ZXJzZSkNCmxpYnJhcnkoamFuaXRvcikgDQpsaWJyYXJ5KGd0KSANCmxpYnJhcnkoaGVyZSkNCmBgYA0KDQpJIGhhdmUgY2hvc2VuIHRvIGxvb2sgYXQgYWxsIHByZXNjcmlwdGlvbnMgZnJvbSAyMDIwIGFuZCAyMDIzLiBUbyBkbyB0aGlzIEkgZG93bmxvYWRlZCB0aGUgcHJlc2NyaXB0aW9ucyBkYXRhIGZvciBlYWNoIG1vbnRoIGZyb206IGh0dHBzOi8vd3d3Lm9wZW5kYXRhLm5ocy5zY290L2RhdGFzZXQvcHJlc2NyaXB0aW9ucy1pbi10aGUtY29tbXVuaXR5ICANCg0KSSB3YW50ZWQgdG8gZXhwbG9yZSBob3cgbWFueSBPQ1AgYW5kIGFudGliaW90aWNzIGZvciBTVElzIHdlcmUgcHJlc2NpYmVkIGR1cmluZyBhY3Jvc3MgMjAyMy4NCg0KYGBge3J9DQojZG93bmxvYWRlZCBjb25zZWN1dGl2ZSBkYXRhIGZvciBwcmVzY3JpcHRpb25zIGZvciBlYWNoIG1vbnRoIG9mIDIwMjAgYW5kIGVhY2ggbW9udGggb2YgMjAyMyBhbmQgcGxhY2VkIHRoZW0gaW50byBhIGZvbGRlciBuYW1lZCBhbGxfbW9udGhzXzIwMjAgYW5kIGFsbF9tb250aHNfMjAyMyByZXNwZWN0aXZlbHkuIEkgdGhlbiBjb21iaW5lZCB0aGVzZSBmaWxlcyBpbnRvIG9uZSB2YXJpYWJsZSBjYWxsZWQgYWxsX3ByZXNjcmlwdGlvbnNfMjAyMCBvciBhbGxfcHJlc2NyaXB0aW9uc18yMDIzLg0KDQphbGxfZmlsZXNfMjAyMCA8LSBsaXN0LmZpbGVzKGhlcmUoImRhdGEiLCJhbGxfbW9udGhzXzIwMjAiKSwgcGF0dGVybiA9ICJjc3YiKQ0KYWxsX3ByZXNjcmlwdGlvbnNfMjAyMCA8LSBhbGxfZmlsZXNfMjAyMCAlPiUgDQogIG1hcF9kZnIofnJlYWRfY3N2KGhlcmUoImRhdGEiLCJhbGxfbW9udGhzXzIwMjAiLCAuKSkpICU+JSANCiAgY2xlYW5fbmFtZXMoKQ0KDQphbGxfZmlsZXNfMjAyMyA8LSBsaXN0LmZpbGVzKGhlcmUoImRhdGEiLCJhbGxfbW9udGhzXzIwMjMiKSwgcGF0dGVybiA9ICJjc3YiKQ0KYWxsX3ByZXNjcmlwdGlvbnNfMjAyMyA8LSBhbGxfZmlsZXNfMjAyMyAlPiUgDQogIG1hcF9kZnIofnJlYWRfY3N2KGhlcmUoImRhdGEiLCJhbGxfbW9udGhzXzIwMjMiLCAuKSxjb2xfdHlwZXMgPSBjb2xzKERNRENvZGUgPSBjb2xfY2hhcmFjdGVyKCkpKSkgJT4lIA0KICBjbGVhbl9uYW1lcygpDQoNCiN3aHkgZGlkIEkgbmVlZCB0byB1c2UgRE1EQ29kZSBjb2xfY2hhcmFjdGVyKCkgaGVyZT8NCg0KSEJfbmFtZXMgPC0gcmVhZF9jc3YoImh0dHBzOi8vd3d3Lm9wZW5kYXRhLm5ocy5zY290L2RhdGFzZXQvOWY5NDJmZGItZTU5ZS00NGY1LWI1MzQtZDZlMTcyMjljYzdiL3Jlc291cmNlLzY1MmZmNzI2LWU2NzYtNGEyMC1hYmRhLTQzNWI5OGRkN2JkYy9kb3dubG9hZC9oYjE0X2hiMTkuY3N2IikgJT4lIA0KICBjbGVhbl9uYW1lcygpDQoNCiNmdWxsX2pvaW4gdG8gYWRkIGhlYWx0aCBib2FyZCBuYW1lIHRvIHRoZSBwcmVzY3JpcHRpb25zIGRhdGFzZXQNCg0KYWxsX3ByZXNjcmlwdGlvbnNfMjAyMCA8LSBhbGxfcHJlc2NyaXB0aW9uc18yMDIwICU+JSANCiAgZnVsbF9qb2luKEhCX25hbWVzLCBieSA9IGMoImhidCIgPSAiaGIiKSkgJT4lIA0KICBzZWxlY3QoaGJfbmFtZSwgaGJ0OnBhaWRfZGF0ZV9tb250aCkNCg0KDQphbGxfcHJlc2NyaXB0aW9uc18yMDIzIDwtIGFsbF9wcmVzY3JpcHRpb25zXzIwMjMgJT4lIA0KICBmdWxsX2pvaW4oSEJfbmFtZXMsIGJ5ID0gYygiaGJ0IiA9ICJoYiIpKSAlPiUgDQogIHNlbGVjdChoYl9uYW1lLCBoYnQ6cGFpZF9kYXRlX21vbnRoKQ0KDQojZGF0YV96b25lc18yMDExIDwtIHJlYWRfY3N2KCJodHRwczovL3d3dy5vcGVuZGF0YS5uaHMuc2NvdC9kYXRhc2V0LzlmOTQyZmRiLWU1OWUtNDRmNS1iNTM0LWQ2ZTE3MjI5Y2M3Yi9yZXNvdXJjZS8zOTU0NzZhYi0wNzIwLTQ3NDAtYmUwNy1mZjQ0NjcxNDEzNTIvZG93bmxvYWQvZHoyMDExX2NvZGVzX2FuZF9sYWJlbHNfMjEwNDIwMjAuY3N2IikgJT4lIA0KICAjY2xlYW5fbmFtZXMoKQ0KDQojU0lNRF8yMDIwIDwtIHJlYWRfY3N2KGhlcmUoImRhdGEiLCAic2NvdHRpc2gtaW5kZXgtb2YtbXVsdGlwbGUtZGVwcml2YXRpb24uY3N2IikpICU+JQ0KICAjY2xlYW5fbmFtZXMoKQ0KDQojZ3BfYWRkcmVzc2VzXzIwMjAgPC0gcmVhZF9jc3YoImh0dHBzOi8vd3d3Lm9wZW5kYXRhLm5ocy5zY290L2RhdGFzZXQvZjIzNjU1YzMtNmUyMy00MTAzLWE1MTEtYTgwZDk5OGFkYjkwL3Jlc291cmNlLzQyMzkxNzIwLTdkY2ItNDhhMi04MDcwLWI5ZDYzYjI0NmFjNi9kb3dubG9hZC9wcmFjdGljZV9jb250YWN0ZGV0YWlsc19vY3QyMDIwLW9wZW4tZGF0YS5jc3YiKSAlPiUgDQogICNjbGVhbl9uYW1lcygpICU+JSANCiAgI3NlbGVjdChwcmFjdGljZV9jb2RlLCBncF9wcmFjdGljZV9uYW1lLCBkYXRhX3pvbmUpDQoNCiNkYXRhX3pvbmVzIDwtIHJlYWRfY3N2KCJodHRwczovL3d3dy5vcGVuZGF0YS5uaHMuc2NvdC9kYXRhc2V0LzlmOTQyZmRiLWU1OWUtNDRmNS1iNTM0LWQ2ZTE3MjI5Y2M3Yi9yZXNvdXJjZS8zOTU0NzZhYi0wNzIwLTQ3NDAtYmUwNy1mZjQ0NjcxNDEzNTIvZG93bmxvYWQvZHoyMDExX2NvZGVzX2FuZF9sYWJlbHNfMjEwNDIwMjAuY3N2IikgJT4lIA0KICAjY2xlYW5fbmFtZXMoKSAlPiUgDQogICNzZWxlY3QoZGF0YV96b25lLCBkYXRhX3pvbmVfbmFtZSkNCg0KIyBVc2UgZGF0YSBmcm9tIHRoZSBtb3N0IHJlY2VudCBjZW5zdXMgdG8gZmluZCB0aGUgbnVtYmVyIG9mIHBlb3BsZSBpbiBlYWNoIGhlYWx0aGJvYXJkIA0KcG9wdWxhdGlvbl9kYXRhIDwtIHJlYWRfY3N2KGhlcmUoImRhdGEiLCAiVVYxMDNfYWdlX2hlYWx0aF9ib2FyZF9jZW5zdXMuY3N2IiksIHNraXAgPSAxMCkgJT4lIA0KICByZW5hbWUoU3BhcmUgPSAiLi4uNiIsDQogICAgICAgICBoYl9uYW1lID0gIkhlYWx0aCBCb2FyZCBBcmVhIDIwMTkiLA0KICAgICAgICAgaGJfcG9wdWxhdGlvbiA9IENvdW50KSAlPiUgDQogIGZpbHRlcihBZ2UgPT0gIkFsbCBwZW9wbGUiICYgU2V4ID09ICJBbGwgcGVvcGxlIikgJT4lIA0KICBzZWxlY3QoaGJfbmFtZSwgaGJfcG9wdWxhdGlvbikgJT4lIA0KICBtdXRhdGUoaGJfbmFtZSA9IHBhc3RlKCJOSFMiLCBoYl9uYW1lKSkNCg0KIyBqb2luIHRoaXMgdG8gdGhlIDIwMjMgcHJlc2NyaXB0aW9ucyBkYXRhc2V0IA0KYWxsX3ByZXNjcmlwdGlvbnNfMjAyMyA8LSBhbGxfcHJlc2NyaXB0aW9uc18yMDIzICU+JSANCiAgZnVsbF9qb2luKHBvcHVsYXRpb25fZGF0YSkNCg0KI2luaXRpYWwgZXhwbG9yYXRpb24gb2YgZGF0YXNldA0KDQpPQ1AgPC0gYWxsX3ByZXNjcmlwdGlvbnNfMjAyMyAlPiUgDQogIGZpbHRlcihzdHJfZGV0ZWN0KGJuZl9pdGVtX2Rlc2NyaXB0aW9uLCAiTEVWT05PfFVMSVBSIikpDQphYnggPC0gYWxsX3ByZXNjcmlwdGlvbnNfMjAyMyAlPiUgDQogIGZpbHRlcihzdHJfZGV0ZWN0KGJuZl9pdGVtX2Rlc2NyaXB0aW9uLCAiQVpJVEhST3xET1hZfENFRlRSSSIpKQ0KDQpPQ1BfYWJ4X3Blcl9oZWFkIDwtIGFsbF9wcmVzY3JpcHRpb25zXzIwMjMgJT4lIA0KICBkcm9wX25hKCklPiUgDQogIGZpbHRlcihzdHJfZGV0ZWN0KGJuZl9pdGVtX2Rlc2NyaXB0aW9uLCAiTEVWT05PfFVMSVBSIikpICU+JSANCiAgZ3JvdXBfYnkoaGJfbmFtZSkgJT4lIA0KICBzdW1tYXJpc2UocXVhbnRpdHlfcGVyX2hlYWQgPSBzdW0ocGFpZF9xdWFudGl0eSkvbWVhbihoYl9wb3B1bGF0aW9uKSkNCg0KT0NQX2FieF9wZXJfaGVhZF9jaGFydCA8LSBPQ1BfYWJ4X3Blcl9oZWFkICU+JSANCiAgZ2dwbG90KGFlcyh4ID0gcXVhbnRpdHlfcGVyX2hlYWQsIHkgPSByZW9yZGVyKGhiX25hbWUsIHF1YW50aXR5X3Blcl9oZWFkKSkpICsNCiAgZ2VvbV9jb2woKSArDQogIGxhYnModGl0bGUgPSAiUHJlc2NyaXB0aW9uIG9mIG9yYWwgY29tYmluZWQgY29udHJhY2VwdGl2ZSBwaWxsIHBlciBwZXJzb24gaW4gZWFjaCBoZWFsdGggYm9hcmQiLA0KICAgICAgIHggPSAiUXVhbnRpdHkgcGVyIGhlYWQiLA0KICAgICAgIHkgPSAiSGVhbHRoIEJvYXJkIikNCiANCk9DUF9hYnhfcGVyX2hlYWRfY2hhcnQNCg0KYGBgDQoNCg0KIyMgS2V5IFJlc3VsdHMgDQoNCg0KPjQgcGxvdHMgYW5kIC8gb3IgdGFibGVzIA0KTm8gdXNlIG9mIHNldHRpbmdzIG90aGVyIHRoYW4gZGVmYXVsdCANCkxhYmVsbGVkLCB0aXRsZWQgcGxvdHMgDQpMYWJlbGxlZCB0aXRsZWQgdGFibGVzIA0KQXBwcm9wcmlhdGUgYW5kIHRob3VnaHRmdWwgZGF0YSB2aXN1YWxpc2F0aW9uIHdpdGggc29tZSB1c2Ugb2Ygbm9uLWRlZmF1bHQgc2V0dGluZ3MgKGd0KQ0KRmFjZXRpbmcsIG11bHRpbGF5ZXJlZCBwbG90cywgaW50ZXJhY3RpdmUgdmlzdWFsaXNhdGlvbiANCg0KWW91IGNhbiBhbHNvIGVtYmVkIHBsb3RzLCBmb3IgZXhhbXBsZToNCg0KYGBge3IgcHJlc3N1cmUsIGVjaG89RkFMU0V9DQoNCmBgYA0KDQojIyBDb25jbHVzaW9uIA0KDQojIyMgUmVjb21tZW5kYXRpb25zIGZyb20gYW5hbHlzaXMgDQoNCiMjIyBMaW1pdGF0aW9ucyBvZiB0aGUgZGF0YXNldCBhbmQgc3VnZ2VzdGlvbnMgZm9yIGZ1dHVyZSBhbmFseXNpcw0KDQoNCiMjIFJlZmVyZW5jZXMgDQpJIHVzZWQgaHR0cHM6Ly9nc3ZlcmhvZXZlbi5naXRodWIuaW8vcG9zdC96b3Rlcm8tcm1hcmtkb3duLWNzbC8gdG8gc2V0IHVwIGNpdGF0aW9ucy4gQ2hvc2VuIEJNSiBzdHlsZSBhcyBjb21tb24uIA0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkFzc2Vzc21lbnQiDQphdXRob3I6ICJCMjczMDI1Ig0KZGF0ZTogImByIFN5cy5EYXRlKClgIg0KYmlibGlvZ3JhcGh5OiAiLi4vem90ZXJvX2NpdGF0aW9ucy5qc29uIg0KbGluay1jaXRhdGlvbnM6IHRydWUNCm91dHB1dDogDQogIGh0bWxfZG9jdW1lbnQ6IA0KICAgIGNvZGVfZG93bmxvYWQ6IHRydWUNCiAgICB0b2M6IHRydWUNCiAgICB0aGVtZTogZmxhdGx5DQoNCi0tLQ0KDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSwgbWVzc2FnZSA9IEZBTFNFLCB3YXJuaW5nID0gRkFMU0UsIGNhY2hlPUZBTFNFKQ0KYGBgDQoNCiMgRW1lcmdlbmN5IENvbnRyYWNlcHRpdmUgUGlsbCBhbmQgU2V4dWFsbHkgVHJhbnNtaXR0ZWQgSW5mZWN0aW9ucw0KDQpKdXN0aWZpZWQg4oCTIHVuZGVyc3RhbmRpbmcgb2YgdGhlIGRhdGEgYW5kIHRoZWlyIGNvbnRleHQgIA0KSW50cm9kdWN0aW9uICANCktleSByZXN1bHRzICAgDQpDb25jbHVzaW9uIA0KUmVmZXJlbmNlcyAoZm9yIHJlYXNvbiBjaG9zZW4gcmVzZWFyY2ggcXVlc3Rpb24pICANCk5hcnJhdGl2ZSBzaG93cyBjcml0aWNhbCB0aGlua2luZyAgDQpNdWx0aXBsZSBkYXRhIHNvdXJjZXMgICANClJlY29tbWVuZGF0aW9ucyBhbmQgY29uY2x1c2lvbnMgYXJlIGdyb3VuZGVkIGluIHRoZSBkYXRhICANCkxpbWl0YXRpb25zIG9mIHRoZSBkYXRhIHNldCBkaXNjdXNzZWQuIE5leHQgc3RlcHMgc3VnZ2VzdGVkIGluIHRlcm1zIG9mIGRhdGEgdGhhdCB3b3VsZCBhbGxvdyBmb3IgZnVydGhlciBhbmFseXNpcy4gICANCg0KIyMgSW50cm9kdWN0aW9uIA0KDQpUaGVyZSBhcmUgdHdvIHR5cGVzIG9mIGVtZXJnZW5jeSBjb250cmFjZXB0aXZlIHBpbGwgcHJlc2NyaWJlZCBieSBwaGFybWFjaWVzLg0KDQo+KiAqKkxldm9ub2dlc3RyZWwqKiAoYnJhbmQgbmFtZTogKkxldm9uZWxsZSopIHRha2VuIHdpdGhpbiB0aHJlZSBkYXlzIG9mIHVucHJvdGVjdGVkIHNleA0KPiogKipVbGlwcmlzdGFsIEFjZXRhdGUqKiAoYnJhbmQgbmFtZTogKmVsbGFPbmUqKSB0YWtlbiB3aXRoaW4gZml2ZSBkYXlzIG9mIHVucHJvdGVjdGVkIHNleCAgDQoNClNUSXMgcG9zZSBhICBzaWduaWZpY2FudCBwdWJsaWMgaGVhbHRoLCB3aXRoIHJlY2VudCB0cmVuZHMgc2hvd2luZyBhbiBpbmNyZWFzZSBpbiBwcmV2YWxlbmNlLiANClRoZSB0d28gbW9zdCBjb21tb24gc2V4dWFsbHkgdHJhbnNtaXR0ZWQgaW5mZWN0aW9ucyBpbiBTY290bGFuZCBhcmUgDQo+ICogKipjaGxhbXlkaWEqKiwgdHJlYXRlZCB3aXRoICpkb3h5Y3lsY2luZSogb3IgKmF6aXRocm9teWNpbiogIA0KPiAqICoqZ29ub3JyaGVhKiosIHRyZWF0ZWQgd2l0aCAqaW50cmFtdXNjdWxhciBjZWZ0cmlheG9uZSouICANCg0KDQpUaGlzIHJlcG9ydCBleHBsb3JlcyANCg0KMSkgUHJlc2NyaWJpbmcgcGF0dGVybnMgb2Ygb3JhbCBjb250cmFjZXB0aXZlIHBpbGwgYW5kIGFudGliaW90aWNzIGFjcm9zcyAyMDIzIChhbnkgdGltZSB0cmVuZHMgZWcgVW5pdmVyc2l0eSByZXR1cm4gZGF0ZXMsIGZlc3RpdmFscyksIGNvbnNpZGVyaW5nIGlmIHRoZSBwcmVzY3JpcHRpb24gb2YgT0NQIG1pcnJvcnMgbnVtYmVyIG9mIHByZXNjcmlwdGlvbnMgb2YgYW50aWJpb3RpY3MgdXNlZCB0byB0cmVhdCBTVElzDQoNCjIpIEhvdyBPQ1AgYW5kIGFudGliaW90aWNzIGZvciBTVEkgcHJlc2NyaXB0aW9ucyBkaWZmZXIgaW4gZ2VvZ3JhcGh5IGNvbXBhcmluZyB1bml2ZXJzaXR5IHRvd24gdG8gYSBub24tdW5pdmVyc2l0eSB0b3duIA0KDQozKSBDb21wYXJlIHBhdHRlcm5zIGluIE9DUCBhbmQgU1RJIGFudGliaW90aWNzIHByZXNjcmliaW5nIGR1cmluZyBDb3ZpZC0xOSBsb2NrZG93bnMgLSBkaWQgdGhlIG5lZWQgZm9yIE9DUCBvciBpbmNpZGVuY2Ugb2YgU1RJIGFudGliaW90aWNzIHByZXNjcmlwdGlvbiBnbyBkb3duIGR1cmluZyBsb2NrZG93bnM/DQoNCmBgYHtyfQ0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KGphbml0b3IpIA0KbGlicmFyeShndCkgDQpsaWJyYXJ5KGhlcmUpDQpgYGANCg0KSSBoYXZlIGNob3NlbiB0byBsb29rIGF0IGFsbCBwcmVzY3JpcHRpb25zIGZyb20gMjAyMCBhbmQgMjAyMy4gVG8gZG8gdGhpcyBJIGRvd25sb2FkZWQgdGhlIHByZXNjcmlwdGlvbnMgZGF0YSBmb3IgZWFjaCBtb250aCBmcm9tOiBodHRwczovL3d3dy5vcGVuZGF0YS5uaHMuc2NvdC9kYXRhc2V0L3ByZXNjcmlwdGlvbnMtaW4tdGhlLWNvbW11bml0eSAgDQoNCkkgd2FudGVkIHRvIGV4cGxvcmUgaG93IG1hbnkgT0NQIGFuZCBhbnRpYmlvdGljcyBmb3IgU1RJcyB3ZXJlIHByZXNjaWJlZCBkdXJpbmcgYWNyb3NzIDIwMjMuDQoNCmBgYHtyfQ0KI2Rvd25sb2FkZWQgY29uc2VjdXRpdmUgZGF0YSBmb3IgcHJlc2NyaXB0aW9ucyBmb3IgZWFjaCBtb250aCBvZiAyMDIwIGFuZCBlYWNoIG1vbnRoIG9mIDIwMjMgYW5kIHBsYWNlZCB0aGVtIGludG8gYSBmb2xkZXIgbmFtZWQgYWxsX21vbnRoc18yMDIwIGFuZCBhbGxfbW9udGhzXzIwMjMgcmVzcGVjdGl2ZWx5LiBJIHRoZW4gY29tYmluZWQgdGhlc2UgZmlsZXMgaW50byBvbmUgdmFyaWFibGUgY2FsbGVkIGFsbF9wcmVzY3JpcHRpb25zXzIwMjAgb3IgYWxsX3ByZXNjcmlwdGlvbnNfMjAyMy4NCg0KYWxsX2ZpbGVzXzIwMjAgPC0gbGlzdC5maWxlcyhoZXJlKCJkYXRhIiwiYWxsX21vbnRoc18yMDIwIiksIHBhdHRlcm4gPSAiY3N2IikNCmFsbF9wcmVzY3JpcHRpb25zXzIwMjAgPC0gYWxsX2ZpbGVzXzIwMjAgJT4lIA0KICBtYXBfZGZyKH5yZWFkX2NzdihoZXJlKCJkYXRhIiwiYWxsX21vbnRoc18yMDIwIiwgLikpKSAlPiUgDQogIGNsZWFuX25hbWVzKCkNCg0KYWxsX2ZpbGVzXzIwMjMgPC0gbGlzdC5maWxlcyhoZXJlKCJkYXRhIiwiYWxsX21vbnRoc18yMDIzIiksIHBhdHRlcm4gPSAiY3N2IikNCmFsbF9wcmVzY3JpcHRpb25zXzIwMjMgPC0gYWxsX2ZpbGVzXzIwMjMgJT4lIA0KICBtYXBfZGZyKH5yZWFkX2NzdihoZXJlKCJkYXRhIiwiYWxsX21vbnRoc18yMDIzIiwgLiksY29sX3R5cGVzID0gY29scyhETURDb2RlID0gY29sX2NoYXJhY3RlcigpKSkpICU+JSANCiAgY2xlYW5fbmFtZXMoKQ0KDQojd2h5IGRpZCBJIG5lZWQgdG8gdXNlIERNRENvZGUgY29sX2NoYXJhY3RlcigpIGhlcmU/DQoNCkhCX25hbWVzIDwtIHJlYWRfY3N2KCJodHRwczovL3d3dy5vcGVuZGF0YS5uaHMuc2NvdC9kYXRhc2V0LzlmOTQyZmRiLWU1OWUtNDRmNS1iNTM0LWQ2ZTE3MjI5Y2M3Yi9yZXNvdXJjZS82NTJmZjcyNi1lNjc2LTRhMjAtYWJkYS00MzViOThkZDdiZGMvZG93bmxvYWQvaGIxNF9oYjE5LmNzdiIpICU+JSANCiAgY2xlYW5fbmFtZXMoKQ0KDQojZnVsbF9qb2luIHRvIGFkZCBoZWFsdGggYm9hcmQgbmFtZSB0byB0aGUgcHJlc2NyaXB0aW9ucyBkYXRhc2V0DQoNCmFsbF9wcmVzY3JpcHRpb25zXzIwMjAgPC0gYWxsX3ByZXNjcmlwdGlvbnNfMjAyMCAlPiUgDQogIGZ1bGxfam9pbihIQl9uYW1lcywgYnkgPSBjKCJoYnQiID0gImhiIikpICU+JSANCiAgc2VsZWN0KGhiX25hbWUsIGhidDpwYWlkX2RhdGVfbW9udGgpDQoNCg0KYWxsX3ByZXNjcmlwdGlvbnNfMjAyMyA8LSBhbGxfcHJlc2NyaXB0aW9uc18yMDIzICU+JSANCiAgZnVsbF9qb2luKEhCX25hbWVzLCBieSA9IGMoImhidCIgPSAiaGIiKSkgJT4lIA0KICBzZWxlY3QoaGJfbmFtZSwgaGJ0OnBhaWRfZGF0ZV9tb250aCkNCg0KI2RhdGFfem9uZXNfMjAxMSA8LSByZWFkX2NzdigiaHR0cHM6Ly93d3cub3BlbmRhdGEubmhzLnNjb3QvZGF0YXNldC85Zjk0MmZkYi1lNTllLTQ0ZjUtYjUzNC1kNmUxNzIyOWNjN2IvcmVzb3VyY2UvMzk1NDc2YWItMDcyMC00NzQwLWJlMDctZmY0NDY3MTQxMzUyL2Rvd25sb2FkL2R6MjAxMV9jb2Rlc19hbmRfbGFiZWxzXzIxMDQyMDIwLmNzdiIpICU+JSANCiAgI2NsZWFuX25hbWVzKCkNCg0KI1NJTURfMjAyMCA8LSByZWFkX2NzdihoZXJlKCJkYXRhIiwgInNjb3R0aXNoLWluZGV4LW9mLW11bHRpcGxlLWRlcHJpdmF0aW9uLmNzdiIpKSAlPiUNCiAgI2NsZWFuX25hbWVzKCkNCg0KI2dwX2FkZHJlc3Nlc18yMDIwIDwtIHJlYWRfY3N2KCJodHRwczovL3d3dy5vcGVuZGF0YS5uaHMuc2NvdC9kYXRhc2V0L2YyMzY1NWMzLTZlMjMtNDEwMy1hNTExLWE4MGQ5OThhZGI5MC9yZXNvdXJjZS80MjM5MTcyMC03ZGNiLTQ4YTItODA3MC1iOWQ2M2IyNDZhYzYvZG93bmxvYWQvcHJhY3RpY2VfY29udGFjdGRldGFpbHNfb2N0MjAyMC1vcGVuLWRhdGEuY3N2IikgJT4lIA0KICAjY2xlYW5fbmFtZXMoKSAlPiUgDQogICNzZWxlY3QocHJhY3RpY2VfY29kZSwgZ3BfcHJhY3RpY2VfbmFtZSwgZGF0YV96b25lKQ0KDQojZGF0YV96b25lcyA8LSByZWFkX2NzdigiaHR0cHM6Ly93d3cub3BlbmRhdGEubmhzLnNjb3QvZGF0YXNldC85Zjk0MmZkYi1lNTllLTQ0ZjUtYjUzNC1kNmUxNzIyOWNjN2IvcmVzb3VyY2UvMzk1NDc2YWItMDcyMC00NzQwLWJlMDctZmY0NDY3MTQxMzUyL2Rvd25sb2FkL2R6MjAxMV9jb2Rlc19hbmRfbGFiZWxzXzIxMDQyMDIwLmNzdiIpICU+JSANCiAgI2NsZWFuX25hbWVzKCkgJT4lIA0KICAjc2VsZWN0KGRhdGFfem9uZSwgZGF0YV96b25lX25hbWUpDQoNCiMgVXNlIGRhdGEgZnJvbSB0aGUgbW9zdCByZWNlbnQgY2Vuc3VzIHRvIGZpbmQgdGhlIG51bWJlciBvZiBwZW9wbGUgaW4gZWFjaCBoZWFsdGhib2FyZCANCnBvcHVsYXRpb25fZGF0YSA8LSByZWFkX2NzdihoZXJlKCJkYXRhIiwgIlVWMTAzX2FnZV9oZWFsdGhfYm9hcmRfY2Vuc3VzLmNzdiIpLCBza2lwID0gMTApICU+JSANCiAgcmVuYW1lKFNwYXJlID0gIi4uLjYiLA0KICAgICAgICAgaGJfbmFtZSA9ICJIZWFsdGggQm9hcmQgQXJlYSAyMDE5IiwNCiAgICAgICAgIGhiX3BvcHVsYXRpb24gPSBDb3VudCkgJT4lIA0KICBmaWx0ZXIoQWdlID09ICJBbGwgcGVvcGxlIiAmIFNleCA9PSAiQWxsIHBlb3BsZSIpICU+JSANCiAgc2VsZWN0KGhiX25hbWUsIGhiX3BvcHVsYXRpb24pICU+JSANCiAgbXV0YXRlKGhiX25hbWUgPSBwYXN0ZSgiTkhTIiwgaGJfbmFtZSkpDQoNCiMgam9pbiB0aGlzIHRvIHRoZSAyMDIzIHByZXNjcmlwdGlvbnMgZGF0YXNldCANCmFsbF9wcmVzY3JpcHRpb25zXzIwMjMgPC0gYWxsX3ByZXNjcmlwdGlvbnNfMjAyMyAlPiUgDQogIGZ1bGxfam9pbihwb3B1bGF0aW9uX2RhdGEpDQoNCiNpbml0aWFsIGV4cGxvcmF0aW9uIG9mIGRhdGFzZXQNCg0KT0NQIDwtIGFsbF9wcmVzY3JpcHRpb25zXzIwMjMgJT4lIA0KICBmaWx0ZXIoc3RyX2RldGVjdChibmZfaXRlbV9kZXNjcmlwdGlvbiwgIkxFVk9OT3xVTElQUiIpKQ0KYWJ4IDwtIGFsbF9wcmVzY3JpcHRpb25zXzIwMjMgJT4lIA0KICBmaWx0ZXIoc3RyX2RldGVjdChibmZfaXRlbV9kZXNjcmlwdGlvbiwgIkFaSVRIUk98RE9YWXxDRUZUUkkiKSkNCg0KT0NQX2FieF9wZXJfaGVhZCA8LSBhbGxfcHJlc2NyaXB0aW9uc18yMDIzICU+JSANCiAgZHJvcF9uYSgpJT4lIA0KICBmaWx0ZXIoc3RyX2RldGVjdChibmZfaXRlbV9kZXNjcmlwdGlvbiwgIkxFVk9OT3xVTElQUiIpKSAlPiUgDQogIGdyb3VwX2J5KGhiX25hbWUpICU+JSANCiAgc3VtbWFyaXNlKHF1YW50aXR5X3Blcl9oZWFkID0gc3VtKHBhaWRfcXVhbnRpdHkpL21lYW4oaGJfcG9wdWxhdGlvbikpDQoNCk9DUF9hYnhfcGVyX2hlYWRfY2hhcnQgPC0gT0NQX2FieF9wZXJfaGVhZCAlPiUgDQogIGdncGxvdChhZXMoeCA9IHF1YW50aXR5X3Blcl9oZWFkLCB5ID0gcmVvcmRlcihoYl9uYW1lLCBxdWFudGl0eV9wZXJfaGVhZCkpKSArDQogIGdlb21fY29sKCkgKw0KICBsYWJzKHRpdGxlID0gIlByZXNjcmlwdGlvbiBvZiBvcmFsIGNvbWJpbmVkIGNvbnRyYWNlcHRpdmUgcGlsbCBwZXIgcGVyc29uIGluIGVhY2ggaGVhbHRoIGJvYXJkIiwNCiAgICAgICB4ID0gIlF1YW50aXR5IHBlciBoZWFkIiwNCiAgICAgICB5ID0gIkhlYWx0aCBCb2FyZCIpDQogDQpPQ1BfYWJ4X3Blcl9oZWFkX2NoYXJ0DQoNCmBgYA0KDQoNCiMjIEtleSBSZXN1bHRzIA0KDQoNCj40IHBsb3RzIGFuZCAvIG9yIHRhYmxlcyANCk5vIHVzZSBvZiBzZXR0aW5ncyBvdGhlciB0aGFuIGRlZmF1bHQgDQpMYWJlbGxlZCwgdGl0bGVkIHBsb3RzIA0KTGFiZWxsZWQgdGl0bGVkIHRhYmxlcyANCkFwcHJvcHJpYXRlIGFuZCB0aG91Z2h0ZnVsIGRhdGEgdmlzdWFsaXNhdGlvbiB3aXRoIHNvbWUgdXNlIG9mIG5vbi1kZWZhdWx0IHNldHRpbmdzIChndCkNCkZhY2V0aW5nLCBtdWx0aWxheWVyZWQgcGxvdHMsIGludGVyYWN0aXZlIHZpc3VhbGlzYXRpb24gDQoNCllvdSBjYW4gYWxzbyBlbWJlZCBwbG90cywgZm9yIGV4YW1wbGU6DQoNCmBgYHtyfQ0KDQpgYGANCg0KIyMgQ29uY2x1c2lvbiANCg0KIyMjIFJlY29tbWVuZGF0aW9ucyBmcm9tIGFuYWx5c2lzIA0KDQojIyMgTGltaXRhdGlvbnMgb2YgdGhlIGRhdGFzZXQgYW5kIHN1Z2dlc3Rpb25zIGZvciBmdXR1cmUgYW5hbHlzaXMNCg0KDQojIyBSZWZlcmVuY2VzIA0KSSB1c2VkIGh0dHBzOi8vZ3N2ZXJob2V2ZW4uZ2l0aHViLmlvL3Bvc3Qvem90ZXJvLXJtYXJrZG93bi1jc2wvIHRvIHNldCB1cCBjaXRhdGlvbnMuIENob3NlbiBCTUogc3R5bGUgYXMgY29tbW9uLiANCg0K</div>
 
 
 
