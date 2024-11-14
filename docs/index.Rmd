@@ -1,8 +1,14 @@
 ---
 title: "Assessment"
-author: "Freya"
-date: "2024-11-01"
-output: html_document
+author: "B273025"
+date: "`r Sys.Date()`"
+bibliography: "../zotero_citations.json"
+link-citations: true
+output: 
+  html_document: 
+    code_download: true
+    toc: true
+    theme: flatly
 
 ---
 
@@ -10,28 +16,133 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Assessing opioid replacement therapies by region 
+# Emergency Contraceptive Pill and Sexually Transmitted Infections
 
-Justified – understanding of the data and their context 
-Introduction 
-Key results 
-Conclusion
-References (for reason chosen research question)
-Narrative shows critical thinking
-Multiple data sources 
-Recommendations and conclusions are grounded in the data 
-Limitations of the data set discussed. Next steps suggested in terms of data that would allow for further analysis. 
+Justified – understanding of the data and their context  
+Introduction  
+Key results   
+Conclusion 
+References (for reason chosen research question)  
+Narrative shows critical thinking  
+Multiple data sources   
+Recommendations and conclusions are grounded in the data  
+Limitations of the data set discussed. Next steps suggested in terms of data that would allow for further analysis.   
 
 ## Introduction 
 
-My project will analyse X, Y, Z 
+There are two types of emergency contraceptive pill prescribed by pharmacies.
 
-```{r cars}
-library(ggplot2)
-summary(cars)
+>* **Levonogestrel** (brand name: *Levonelle*) taken within three days of unprotected sex
+>* **Ulipristal Acetate** (brand name: *ellaOne*) taken within five days of unprotected sex  
+
+STIs pose a  significant public health, with recent trends showing an increase in prevalence. 
+The two most common sexually transmitted infections in Scotland are 
+>* **chlamydia**, treated with *doxycylcine* or *azithromycin*  
+>* **gonorrhea**, treated with *intramuscular ceftriaxone*.  
+
+
+This report explores 
+
+1) Prescribing patterns of oral contraceptive pill and antibiotics across 2023 (any time trends eg University return dates, festivals), considering if the prescription of OCP mirrors number of prescriptions of antibiotics used to treat STIs
+
+2) How OCP and antibiotics for STI prescriptions differ in geography comparing university town to a non-university town 
+
+3) Compare patterns in OCP and STI antibiotics prescribing during Covid-19 lockdowns - did the need for OCP or incidence of STI antibiotics prescription go down during lockdowns?
+
+```{r}
+library(tidyverse)
+library(janitor) 
+library(gt) 
+library(here)
 ```
 
+I have chosen to look at all prescriptions from 2020 and 2023. To do this I downloaded the prescriptions data for each month from: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community  
+
+I wanted to explore how many OCP and antibiotics for STIs were prescibed during across 2023.
+
+```{r}
+#downloaded consecutive data for prescriptions for each month of 2020 and each month of 2023 and placed them into a folder named all_months_2020 and all_months_2023 respectively. I then combined these files into one variable called all_prescriptions_2020 or all_prescriptions_2023.
+
+all_files_2020 <- list.files(here("data","all_months_2020"), pattern = "csv")
+all_prescriptions_2020 <- all_files_2020 %>% 
+  map_dfr(~read_csv(here("data","all_months_2020", .))) %>% 
+  clean_names()
+
+all_files_2023 <- list.files(here("data","all_months_2023"), pattern = "csv")
+all_prescriptions_2023 <- all_files_2023 %>% 
+  map_dfr(~read_csv(here("data","all_months_2023", .),col_types = cols(DMDCode = col_character()))) %>% 
+  clean_names()
+
+#why did I need to use DMDCode col_character() here?
+
+HB_names <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/652ff726-e676-4a20-abda-435b98dd7bdc/download/hb14_hb19.csv") %>% 
+  clean_names()
+
+#full_join to add health board name to the prescriptions dataset
+
+all_prescriptions_2020 <- all_prescriptions_2020 %>% 
+  full_join(HB_names, by = c("hbt" = "hb")) %>% 
+  select(hb_name, hbt:paid_date_month)
+
+
+all_prescriptions_2023 <- all_prescriptions_2023 %>% 
+  full_join(HB_names, by = c("hbt" = "hb")) %>% 
+  select(hb_name, hbt:paid_date_month)
+
+#data_zones_2011 <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/395476ab-0720-4740-be07-ff4467141352/download/dz2011_codes_and_labels_21042020.csv") %>% 
+  #clean_names()
+
+#SIMD_2020 <- read_csv(here("data", "scottish-index-of-multiple-deprivation.csv")) %>%
+  #clean_names()
+
+#gp_addresses_2020 <- read_csv("https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/42391720-7dcb-48a2-8070-b9d63b246ac6/download/practice_contactdetails_oct2020-open-data.csv") %>% 
+  #clean_names() %>% 
+  #select(practice_code, gp_practice_name, data_zone)
+
+#data_zones <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/395476ab-0720-4740-be07-ff4467141352/download/dz2011_codes_and_labels_21042020.csv") %>% 
+  #clean_names() %>% 
+  #select(data_zone, data_zone_name)
+
+# Use data from the most recent census to find the number of people in each healthboard 
+population_data <- read_csv(here("data", "UV103_age_health_board_census.csv"), skip = 10) %>% 
+  rename(Spare = "...6",
+         hb_name = "Health Board Area 2019",
+         hb_population = Count) %>% 
+  filter(Age == "All people" & Sex == "All people") %>% 
+  select(hb_name, hb_population) %>% 
+  mutate(hb_name = paste("NHS", hb_name))
+
+# join this to the 2023 prescriptions dataset 
+all_prescriptions_2023 <- all_prescriptions_2023 %>% 
+  full_join(population_data)
+
+#initial exploration of dataset
+
+OCP <- all_prescriptions_2023 %>% 
+  filter(str_detect(bnf_item_description, "LEVONO|ULIPR"))
+abx <- all_prescriptions_2023 %>% 
+  filter(str_detect(bnf_item_description, "AZITHRO|DOXY|CEFTRI"))
+
+OCP_abx_per_head <- all_prescriptions_2023 %>% 
+  drop_na()%>% 
+  filter(str_detect(bnf_item_description, "LEVONO|ULIPR")) %>% 
+  group_by(hb_name) %>% 
+  summarise(quantity_per_head = sum(paid_quantity)/mean(hb_population))
+
+OCP_abx_per_head_chart <- OCP_abx_per_head %>% 
+  ggplot(aes(x = quantity_per_head, y = reorder(hb_name, quantity_per_head))) +
+  geom_col() +
+  labs(title = "Prescription of oral combined contraceptive pill per person in each health board",
+       x = "Quantity per head",
+       y = "Health Board")
+ 
+OCP_abx_per_head_chart
+
+```
+
+
 ## Key Results 
+
 
 >4 plots and / or tables 
 No use of settings other than default 
@@ -43,7 +154,7 @@ Faceting, multilayered plots, interactive visualisation
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+
 ```
 
 ## Conclusion 
@@ -54,5 +165,5 @@ plot(pressure)
 
 
 ## References 
-
+I used https://gsverhoeven.github.io/post/zotero-rmarkdown-csl/ to set up citations. Chosen BMJ style as common. 
 
