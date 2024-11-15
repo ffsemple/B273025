@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE
 
 # Emergency Contraceptive Pill and Sexually Transmitted Infections
 
+Mark scheme:
 Justified – understanding of the data and their context  
 Introduction  
 Key results   
@@ -43,25 +44,28 @@ The two most common sexually transmitted infections in Scotland are
 
 This report explores 
 
-1) Prescribing patterns of oral contraceptive pill and antibiotics across 2023 (any time trends eg University return dates, festivals), considering if the prescription of OCP mirrors number of prescriptions of antibiotics used to treat STIs
+1) Prescribing patterns of emergency contraceptive pill (ECP) and antibiotics across 2023 (any time trends eg University return dates, festivals), considering if the prescription of ECP mirrors number of prescriptions of antibiotics used to treat STIs
 
-2) How OCP and antibiotics for STI prescriptions differ in geography comparing university town to a non-university town 
+2) How ECP and antibiotics for STI prescriptions differ in geography comparing university town to a non-university town 
 
-3) Compare patterns in OCP and STI antibiotics prescribing during Covid-19 lockdowns - did the need for OCP or incidence of STI antibiotics prescription go down during lockdowns?
+3) Compare patterns in ECP and STI antibiotics prescribing during Covid-19 lockdowns - did the need for ECP or incidence of STI antibiotics prescription go down during lockdowns?
+
+4) How does SIMD relate to prescription of ECP / antibiotics for STIs 
 
 ```{r}
 library(tidyverse)
 library(janitor) 
 library(gt) 
 library(here)
+library(lubridate)
 ```
 
 I have chosen to look at all prescriptions from 2020 and 2023. To do this I downloaded the prescriptions data for each month from: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community  
 
-I wanted to explore how many OCP and antibiotics for STIs were prescibed during across 2023.
+I wanted to explore how many ECP and antibiotics for STIs were prescibed during across 2023.
 
 ```{r}
-#downloaded consecutive data for prescriptions for each month of 2020 and each month of 2023 and placed them into a folder named all_months_2020 and all_months_2023 respectively. I then combined these files into one variable called all_prescriptions_2020 or all_prescriptions_2023.
+#downloaded consecutive data for prescriptions for each month of 2020 and each month of 2023 and placed them into a folder named all_months_2020 and all_months_2023 respectively. I then combined these files into variables for all_prescriptions_2020 or all_prescriptions_2023.
 
 all_files_2020 <- list.files(here("data","all_months_2020"), pattern = "csv")
 all_prescriptions_2020 <- all_files_2020 %>% 
@@ -89,6 +93,7 @@ all_prescriptions_2023 <- all_prescriptions_2023 %>%
   full_join(HB_names, by = c("hbt" = "hb")) %>% 
   select(hb_name, hbt:paid_date_month)
 
+# Data sets to consider exploring: 
 #data_zones_2011 <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/395476ab-0720-4740-be07-ff4467141352/download/dz2011_codes_and_labels_21042020.csv") %>% 
   #clean_names()
 
@@ -103,7 +108,9 @@ all_prescriptions_2023 <- all_prescriptions_2023 %>%
   #clean_names() %>% 
   #select(data_zone, data_zone_name)
 
-# Use data from the most recent census to find the number of people in each healthboard 
+
+# Use data from the most recent census to find the number of people in each health board 
+
 population_data <- read_csv(here("data", "UV103_age_health_board_census.csv"), skip = 10) %>% 
   rename(Spare = "...6",
          hb_name = "Health Board Area 2019",
@@ -118,25 +125,58 @@ all_prescriptions_2023 <- all_prescriptions_2023 %>%
 
 #initial exploration of dataset
 
-OCP <- all_prescriptions_2023 %>% 
+ECP <- all_prescriptions_2023 %>% 
   filter(str_detect(bnf_item_description, "LEVONO|ULIPR"))
 abx <- all_prescriptions_2023 %>% 
   filter(str_detect(bnf_item_description, "AZITHRO|DOXY|CEFTRI"))
 
-OCP_abx_per_head <- all_prescriptions_2023 %>% 
+ECP_per_head <- all_prescriptions_2023 %>% 
   drop_na()%>% 
   filter(str_detect(bnf_item_description, "LEVONO|ULIPR")) %>% 
   group_by(hb_name) %>% 
   summarise(quantity_per_head = sum(paid_quantity)/mean(hb_population))
 
-OCP_abx_per_head_chart <- OCP_abx_per_head %>% 
+ECP_per_head_chart <- ECP_per_head %>% 
   ggplot(aes(x = quantity_per_head, y = reorder(hb_name, quantity_per_head))) +
   geom_col() +
-  labs(title = "Prescription of oral combined contraceptive pill per person in each health board",
+  labs(title = "Prescription of emergency contraceptive pills per person in each health board",
        x = "Quantity per head",
        y = "Health Board")
  
-OCP_abx_per_head_chart
+ECP_per_head_chart
+
+prescriptions_2023 <- all_prescriptions_2023 %>% #each drug had different dosages and names so I used case_when() to group the drug names.
+  mutate(
+    month = parse_date_time(paid_date_month, "ym"),
+    drug_simple = case_when(
+      str_detect(bnf_item_description, "LEVONO") ~ "Levonorgestrel",
+      str_detect(bnf_item_description, "ULIPR") ~ "Ulipristal",
+      str_detect(bnf_item_description, "AZITHRO") ~ "Azithromycin",
+      str_detect(bnf_item_description, "DOXY") ~ "Doxycycline",
+      str_detect(bnf_item_description, "CEFTRI") ~ "Ceftriaxone",
+      TRUE ~ "Other"),
+    # categorised drug classes into emergency contraceptives and antibiotics
+    category = if_else(drug_simple %in% c("Levonorgestrel", "Ulipristal"), "Emergency Contraceptives", "Antibiotics")) %>% 
+  filter(drug_simple != "Other") %>%
+  group_by(month, drug = drug_simple, category) %>%
+  summarise(total_quantity = sum(paid_quantity, na.rm = TRUE))
+
+prescriptions_2023_chart <- prescriptions_2023 %>% 
+  ggplot(aes(x = month, y = total_quantity, color = drug)) +
+  geom_line() +
+  labs(
+    title = "Monthly Prescription Counts for each drug",
+    subtitle = "Separated into emergency conrtaception prescriptions and antibiotic prescriptions.",
+    x = "Month in 2023",
+    y = "Number of Prescriptions",
+    color = "Drug"
+  ) +
+  theme_minimal() +
+  facet_wrap(~category, ncol = 1)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 10))
+  #scale_x_date(date_labels = "%b %Y", date_breaks = "1 month")
+
+prescriptions_2023_chart
 
 ```
 
