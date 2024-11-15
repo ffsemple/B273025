@@ -58,6 +58,7 @@ library(janitor)
 library(gt) 
 library(here)
 library(lubridate)
+library(patchwork)
 ```
 
 I have chosen to look at all prescriptions from 2020 and 2023. To do this I downloaded the prescriptions data for each month from: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community  
@@ -186,16 +187,40 @@ prescriptions_2023_chart <- prescriptions_2023 %>%
 prescriptions_2023_chart
 
 
-#prescriptions of ECP are relatively tiny when compared to quantity of antibiotics prescribed - preventing observation of trends in ECP. Could use patchwork to present to separate ggplots 
+#prescriptions of ECP are relatively tiny when compared to quantity of antibiotics prescribed - preventing observation of trends in ECP. Could use patchwork to present two separate ggplots 
 
+ECP_plot <- prescriptions_2023 %>% 
+  filter(category == "Emergency Contraceptives") %>% 
+  ggplot(aes(x=month, y=total_quantity, colour = drug))+
+  geom_line()+
+  labs(
+    title= "Monthly prescription counts for emergency contraceptive pills in 2023",
+    x = "Months in 2023",
+    y = "Number of prescriptions",
+    colour = "Drug")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 10))
 
-ECP <- all_prescriptions_2023 %>% 
-  filter(str_detect(bnf_item_description, "LEVONO|ULIPR"))
-abx <- all_prescriptions_2023 %>% 
-  filter(str_detect(bnf_item_description, "AZITHRO|DOXY|CEFTRI"))
+abx_plot <- prescriptions_2023 %>% 
+  filter(category == "Antibiotics") %>% 
+  ggplot(aes(x=month, y=total_quantity, colour = drug))+
+  geom_line()+
+  labs(
+    title= "Monthly prescription counts for antibiotics in 2023",
+    x = "Months in 2023",
+    y = "Number of prescriptions",
+    colour = "Drug"
+  )+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 10))
 
+#combine plots:
 
+combined_ECP_abx_plot_2023 <- ECP_plot/abx_plot
+combined_ECP_abx_plot_2023
 
+# antibiotics prescriptions are not specific to STI. Is there a way of using age as a cut off for prescriptiosn? I don't think so as this isn't in the prescriptions database
+# could i maybe make an assumption that 20% of prescriptions for abx are for STIs ?? if i find a reference
 ```
 
 ## Conclusion 
