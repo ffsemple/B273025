@@ -64,6 +64,16 @@ I have chosen to look at all prescriptions from 2020 and 2023. To do this I down
 
 I wanted to explore how many ECP and antibiotics for STIs were prescibed during across 2023.
 
+## Key Results 
+
+
+>4 plots and / or tables 
+No use of settings other than default 
+Labelled, titled plots 
+Labelled titled tables 
+Appropriate and thoughtful data visualisation with some use of non-default settings (gt)
+Faceting, multilayered plots, interactive visualisation 
+
 ```{r}
 #downloaded consecutive data for prescriptions for each month of 2020 and each month of 2023 and placed them into a folder named all_months_2020 and all_months_2023 respectively. I then combined these files into variables for all_prescriptions_2020 or all_prescriptions_2023.
 
@@ -125,10 +135,7 @@ all_prescriptions_2023 <- all_prescriptions_2023 %>%
 
 #initial exploration of dataset
 
-ECP <- all_prescriptions_2023 %>% 
-  filter(str_detect(bnf_item_description, "LEVONO|ULIPR"))
-abx <- all_prescriptions_2023 %>% 
-  filter(str_detect(bnf_item_description, "AZITHRO|DOXY|CEFTRI"))
+
 
 ECP_per_head <- all_prescriptions_2023 %>% 
   drop_na()%>% 
@@ -178,22 +185,16 @@ prescriptions_2023_chart <- prescriptions_2023 %>%
 
 prescriptions_2023_chart
 
-```
+
+#prescriptions of ECP are relatively tiny when compared to quantity of antibiotics prescribed - preventing observation of trends in ECP. Could use patchwork to present to separate ggplots 
 
 
-## Key Results 
+ECP <- all_prescriptions_2023 %>% 
+  filter(str_detect(bnf_item_description, "LEVONO|ULIPR"))
+abx <- all_prescriptions_2023 %>% 
+  filter(str_detect(bnf_item_description, "AZITHRO|DOXY|CEFTRI"))
 
 
->4 plots and / or tables 
-No use of settings other than default 
-Labelled, titled plots 
-Labelled titled tables 
-Appropriate and thoughtful data visualisation with some use of non-default settings (gt)
-Faceting, multilayered plots, interactive visualisation 
-
-You can also embed plots, for example:
-
-```{r}
 
 ```
 
@@ -202,6 +203,9 @@ You can also embed plots, for example:
 ### Recommendations from analysis 
 
 ### Limitations of the dataset and suggestions for future analysis
+
+antibiotics are prescribed for pneumonia / other infections. Not specific to STIs. Maybe find what percentage of antibiotics for doxy / azithro are prescribed for STIs in scotland and use this as an assumption when completing further analysis?
+
 
 
 ## References 
