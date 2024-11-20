@@ -16,7 +16,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE)
 ```
 
-# Emergency Contraceptive Pill and Sexually Transmitted Infections
+# Emergency Contraceptive Pill Prescribing Patterns in Scotland 
 
 Mark scheme:
 Justified – understanding of the data and their context  
@@ -55,6 +55,8 @@ library(gt)
 library(here)
 library(lubridate)
 library(patchwork)
+library(glue) 
+
 ```
 
 I have chosen to look at all prescriptions from 2020 and 2023. To do this I downloaded the prescriptions data for each month from: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community  
@@ -100,10 +102,8 @@ read_all_prescriptions <- function(year){
 }
 ```
 
-
+Read in, tidy datasets using read_all_prescriptions() function:
 ```{r}
-
-# I have used the function read_all_prescriptions() to read in prescription data from 2019 to 2022.
 all_prescriptions_2019 <- read_all_prescriptions(2019)
 all_prescriptions_2020 <- read_all_prescriptions(2020)
 all_prescriptions_2021 <- read_all_prescriptions(2021)
@@ -120,26 +120,36 @@ combined_prescriptions <- bind_rows(
   all_prescriptions_2021,
   all_prescriptions_2022
 )
+```
 
-# select emergency contraceptive pill (ECP) to make dataframe smaller before continuing with data wrangling and joining datasets
+Tidy and wrangle data:
+```{r}
+# select emergency contraceptive pill (ECP) to make dataframe smaller
 ECP_prescriptions <- combined_prescriptions %>% 
   mutate(
     date = parse_date_time(paid_date_month, "ym"), # use lubridate to format date
     drug_simple = case_when(
       str_detect(bnf_item_description, "LEVONO") ~ "Levonorgestrel",
       str_detect(bnf_item_description, "ULIPR") ~ "Ulipristal Acetate",
-      TRUE ~ "Other")) %>% # each drug has different dosages so I used case_when() to group them by their drug names 
+      TRUE ~ "Other")) %>% # used case_when() to group different dosages of the same drug 
   filter(drug_simple != "Other") %>% # remove other prescriptions from the dataset 
   group_by(hbt, date, drug = drug_simple) %>%  
   summarise(total_quantity = sum(paid_quantity, na.rm = TRUE)) # sum prescriptions of ECP
 
 # full join HB_names and population_data to all_prescriptions dataset
 ECP_prescriptions_population <- ECP_prescriptions %>%
-  full_join(HB_names, by = c("hbt" = "hb")) %>%          # Join with Health Board names
-  full_join(population_data, by = "hb_name") %>%         # Join with population data
+  full_join(HB_names, by = c("hbt" = "hb")) %>% # Join with Health Board names
+  full_join(population_data, by = "hb_name") %>% # Join with population data
   select(hb_name, date, drug, total_quantity,hb_population) %>% # Select columns of interest
-  drop_na(total_quantity) %>%                                          # Drop rows with missing values
+  drop_na(total_quantity) %>% # Drop rows with missing values
   clean_names()  
+
+# calculate rate of prescriptions per 10,000 women
+ECP_prescriptions_population_rate <- ECP_prescriptions_population %>% 
+  mutate(prescriptions_per_10000 = (total_quantity / hb_population)*10000) %>% 
+  mutate(month = factor(month(date), levels = 1:12, labels = month.abb), .after = date) %>%   # extract month as a factor with labels to help when plotting
+  mutate(year = factor(year(date)), .after = month) %>%  # extract year as a factor with labels to help when plotting
+  ungroup()
 
 ```
 
@@ -152,14 +162,6 @@ This graph explores seasonal trends in prescribing of the two most commonly pres
 
 Plot:
 ```{r}
-#
-ECP_prescriptions_population_rate <- ECP_prescriptions_population %>% 
-  mutate(prescriptions_per_10000 = (total_quantity / hb_population)*10000) %>% # calculate the ECP prescription rate
-  mutate(month = factor(month(date), levels = 1:12, labels = month.abb), .after = date) %>%   # extract month as a factor with labels to help when plotting
-  mutate(year = factor(year(date)), .after = month) %>%  # extract year as a factor with labels to help when plotting
-  ungroup()
-
-
 ECP_plot <- ECP_prescriptions_population_rate %>%
   group_by(year, month, drug) %>% 
   summarise(prescriptions_per_10000 = sum(prescriptions_per_10000)) %>% 
@@ -193,6 +195,61 @@ Trends to note:
 * 2019 and 2022 represent years without Covid-19 lockdown measures. 2019 and 2022 have a peak in prescriptions of Levonorgestrel in October and August respectively. This perhaps reflects increased sexual activity coupled with the return to university with 'fresher' week. 
 * Between Febuary and May of 2020 the prescription rate of Levonorgestrel decreases. This is likely due to decreased sexual activity and risk taking behaviours due to the stringent national 'lockdown' measures introduced between X to Y in response to the Covid-19 pandemic. 
 * At the start of 2021 prescription rate of Levonorgestrel is very low. Likely due to additional Covid-19 lockdowns.
+
+It would be interesting to explore if different Health Boards prescribe different amounts of ECP. 
+
+### Table to show prescribing rate of ECP per Health Board 
+
+```{r}
+# table showing HB-name, prescribing rate, separate the two pills, put in order of who is prescribing the most levo, year?
+Avg_HB_prescriptions <- ECP_prescriptions_population_rate %>%
+  group_by(hb_name, drug) %>% 
+  summarise(mean_script_per_10000 = mean(prescriptions_per_10000, na.rm=TRUE)) %>%  # calculate the mean prescription of ECP per Health Board across all four years
+  ungroup() %>%
+  pivot_wider(names_from= drug, values_from = mean_script_per_10000) %>%
+  mutate(total_ECP_prescriptions = rowSums(select(., starts_with("Levonorgestrel"):ends_with("Ulipristal Acetate")), na.rm = TRUE)) %>%  # Add total column
+  arrange(desc(total_ECP_prescriptions)) %>%  # Arrange by total prescriptions in descending order
+  gt() %>% 
+  
+  # Move the column 'Sex' after the column 'Diagnosis' 
+  #  cols_move(columns = Sex, after = Diagnosis) %>%
+  cols_label(hb_name = "Health Board",
+             total_ECP_prescriptions= "Total") %>% # Rename the column
+  # Format the columns with numbers to have two decimal places
+  fmt_number(columns = c(Levonorgestrel, "Ulipristal Acetate", total_ECP_prescriptions), decimals = 2) %>% 
+  
+  # Centre the number columns. Note that the British spelling will not work. Use the
+  # American center instead.
+  cols_align(align = "center",
+             columns = c(Levonorgestrel,"Ulipristal Acetate")) %>% 
+  # Add an overall summary of the number columns
+  grand_summary_rows(columns = c(Levonorgestrel,"Ulipristal Acetate", total_ECP_prescriptions),
+                     fns = list("Overall Average" = ~mean(., na.rm = TRUE)),
+                     fmt = list(~ fmt_number(., decimals = 2))) %>% 
+  
+  # Add a title and subtitle
+  tab_header(title = md("**Average rate of Emergency Contraception prescribed per Health Board in Scotland**"),
+             # For the subtitle we can use the package glue, and paste the unique values of health board
+             subtitle = md("This table summarises the average prescription of *ECP* from 2019 to 2022. Health Board names are arranged from those with the most to the least ECP prescriptions per 10,000 women.")) %>%
+  # Finally, use tab_spanner to add a title to the columns 'CrudeRate' and 'EASR'.
+  tab_spanner(
+    label = md("*Rate per 10,000 women*"),
+    columns = c(Levonorgestrel,"Ulipristal Acetate",total_ECP_prescriptions)) %>% 
+  tab_source_note(md("Data from Public Health Scotland. Available from: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community ")) %>% 
+  tab_stubhead(md("**2019-2022**")) %>% 
+  tab_footnote(
+    footnote = md("*Health Board includes the Capital City, Edinburgh*"),
+    locations = cells_body(columns = hb_name, rows = 2)
+  ) %>% 
+  tab_style(style = cell_text(size = "12px"),
+            locations = cells_column_spanners(spanners = md("*Rate per 10,000 women*"))) %>%  # make spanner text size smaller
+  opt_stylize(style = 6, color = "cyan")
+
+
+Avg_HB_prescriptions
+```
+
+
 
 ### Impact of deprivation on the type of emergency contraceptive prescribed
 
