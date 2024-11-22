@@ -64,6 +64,31 @@ I have chosen to look at all prescriptions from 2020 and 2023. To do this I down
 I wanted to explore how many ECP and antibiotics for STIs were prescibed during across 2023.
 
 
+AGE population read in 
+```{r}
+age_population_data <- read_csv(here("data", "UV103_age_health_board_census.csv"), skip = 10) %>% # locates the csv and excludes the first 10 lines in the csv as they are redundant
+  rename(Spare = "...6", # remove unused columns
+         hb_name = "Health Board Area 2019",
+         hb_population = Count) %>% # rename() formats the data to match the prescriptions dataframe
+  filter(Sex == "Female") %>% # filter female population, as men do not take ECP
+  select(hb_name, Age, hb_population) %>% # select columns of interest
+  mutate(hb_name = paste("NHS", hb_name)) %>%  # change hb_name column format to match the Health Board dataframe format
+  clean_names()
+
+age_population_data <- age_population_data %>% 
+  filter(!age%in% c("All people", "Under 1", "85 and over")) %>% 
+  mutate(age = as.numeric(age)) %>% 
+  mutate(agegroup = case_when(between(age, 0,15)~ '15andunder',
+                              between(age, 16,34)~'16-35',
+                              age >35 ~ '35andover'))
+
+age_population_data <- age_population_data %>% 
+  filter(age%in% c(16:34)) %>% 
+  mutate(age = as.numeric(age)) %>% 
+  mutate(agegroup = case_when(between(age, 16,34)~'16-34'))
+```
+
+
 
 >4 plots and / or tables 
 No use of settings other than default 
@@ -74,7 +99,7 @@ Faceting, multilayered plots, interactive visualisation
 
 Read in data:
 ```{r}
-# Read in the Health Board names (HB_names). Available from https://www.opendata.nhs.scot/dataset/geography-codes-and-labels/resource/652ff726-e676-4a20-abda-435b98dd7bdc  
+# Read in the Health Board names (HB_names). See code for link
 HB_names <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/652ff726-e676-4a20-abda-435b98dd7bdc/download/hb14_hb19.csv") %>% 
   clean_names() # ensures column names are unique, lower case and replaces spaces and special characters with underscores. I will use this function for all read ins to ensure my data is consistent and easy to manipulate.
 
