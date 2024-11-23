@@ -64,13 +64,6 @@ I have chosen to look at all prescriptions from 2020 and 2023. To do this I down
 I wanted to explore how many ECP and antibiotics for STIs were prescibed during across 2023.
 
 
-AGE population read in 
-```{r}
-
-```
-
-
-
 >4 plots and / or tables 
 No use of settings other than default 
 Labelled, titled plots 
@@ -155,6 +148,7 @@ Read in datasets using read_all_prescriptions() function and start tidying:
 # # save combined_prescriptions dataset to csv
 # # write_csv(combined_prescriptions,"data/combined_prescriptions.csv")
 
+# filter drugs of intereset before completing read in to prevent loading large datasets into the environment (prevents R from running slow and crashing)
 combined_prescriptions <- read_csv(here("data","combined_prescriptions.csv")) %>%
   mutate(
     date = parse_date_time(paid_date_month, "ym"), # use lubridate to format date
@@ -176,46 +170,9 @@ ECP_scripts <- combined_prescriptions %>%
   full_join(population_data, by = "hb_name") %>% # Join with population data
   select(gp_practice, date, drug = drug_simple, hb_name, paid_quantity,hb_population) %>%  # select columns of interest
   mutate(month = factor(month(date), levels = 1:12, labels = month.abb), .after = date) %>%   # extract month as a factor with labels to help when plotting
-  mutate(year = factor(year(date)), .after = month)
+  mutate(year = factor(year(date)), .after = month) 
 
 ```
-
-correct version:
-```{r}
-# # select emergency contraceptive pill (ECP) to make dataframe smaller
-# ECP_prescriptions <- combined_prescriptions %>% 
-#   mutate(
-#     date = parse_date_time(paid_date_month, "ym"), # use lubridate to format date
-#     drug_simple = case_when(
-#       str_detect(bnf_item_description, "LEVONO") ~ "Levonorgestrel",
-#       str_detect(bnf_item_description, "ULIPR") ~ "Ulipristal Acetate",
-#       TRUE ~ "Other")) %>% # used case_when() to group different dosages of the same drug 
-#   filter(drug_simple != "Other") %>% # remove other prescriptions from the dataset 
-#   group_by(hbt, date, drug = drug_simple) %>%
-#   summarise(total_quantity = sum(paid_quantity, na.rm = TRUE),.groups = "drop") # sum prescriptions of ECP
-
-# 
-# # full join HB_names and population_data to all_prescriptions dataset
-# ECP_pop <- ECP_prescriptions %>%
-#   select(hb_name,date, drug, total_quantity,hb_population) %>% # Select columns of interest
-#   drop_na(total_quantity) %>% # Drop rows with missing values
-#   clean_names() %>% 
-#   ungroup()
-# 
-# ECP_table_data <- ECP_scripts %>% 
-#   group_by(hb_name, drug, hb_population) %>%
-#   summarise(total_quantity = sum(paid_quantity, na.rm = TRUE),.groups = "drop") %>%  # sum prescriptions of ECP
-#   ungroup()
-# 
-# 
-# # calculate rate of prescriptions per 10,000 women
-# ECP_pop_rate <- ECP_pop %>% 
-#   mutate(prescriptions_per_10000 = (total_quantity / hb_population)*10000) %>% 
-#   mutate(month = factor(month(date), levels = 1:12, labels = month.abb), .after = date) %>%   # extract month as a factor with labels to help when plotting
-#   mutate(year = factor(year(date)), .after = month) %>%  # extract year as a factor with labels to help when plotting
-#   ungroup()
-```
-
 
 ## Key Results 
 
@@ -285,12 +242,6 @@ ECP_plot <- ECP_plot_data_v2 %>%
   )
 
 ECP_plot
-
-
-ECP_plot_interactive <- ggplotly(ECP_plot)
-ECP_plot_interactive
-
-
 ```
 
 investigate what happened in 2019 - change in prescription practises over time ? 
@@ -405,80 +356,76 @@ SIMD <- read_csv("https://www.opendata.nhs.scot/gl/dataset/78d41fa9-1a62-4f7b-9e
   clean_names() %>%
   select(data_zone, simd2020v2hb_decile)
 
-gp_addresses <- read_csv("https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/9c1dccc7-7632-4b13-b451-092bd57973a4/download/practice_contactdetails_apr2023-open-data-1.csv") %>%
+# I chose to use GP Practices and List sizes from October 2022, as this was the closest dataset I could find which correlated with the final year of my prescriptions datset
+gp_addresses <- read_csv("https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/1a15cb34-fcf9-4d3f-ad63-1ba3e675fbe2/download/practice_contactdetails_oct2022-open-data.csv") %>%
   clean_names() %>%
   select(practice_code, gp_practice_name, data_zone)
 
-# data_zones <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/395476ab-0720-4740-be07-ff4467141352/download/dz2011_codes_and_labels_21042020.csv") %>%
-#   clean_names() %>%
-#   select(data_zone, data_zone_name)
+# Create ECP_GP by using the GP_addresses dataset to map the GP practice code to a datazone. I then used the column datazone to full_join() the SIMD dataset to the prescriptions dataset.
+   
+ECP_GP <- ECP_scripts %>%
+  filter(!gp_practice %in% c(99996, 99997, 99998)) %>% # remove dummy GP practice codes as they do not have a known gp practice code so cannot be mapped to a SIMD.
+  left_join(gp_addresses, by = c("gp_practice" = "practice_code")) %>%
+  #left_join(data_zones, by = "data_zone") %>%
+  left_join(SIMD, by = "data_zone") %>%
+  drop_na(simd2020v2hb_decile) %>% # need SIMD value to make barchart
+  group_by(gp_practice) %>% 
+  mutate(total_quantity_per_gp = sum(paid_quantity)) %>% 
+  clean_names()
 
-# Create ECP_prescriptions_GP_location by using the GP_addresses dataset to map the GP practice code to a datazone. I could then use datazone to full_join() the SIMD dataset to the prescriptions dataset.
-# 
-# 
-# ECP_GP <- ECP_presc_sum_month %>%
-#   left_join(gp_addresses, by = c("gp_practice" = "practice_code")) %>%
-#   #left_join(data_zones, by = "data_zone") %>%
-#   left_join(SIMD, by = "data_zone") %>%
-#   ungroup() %>%
-#   drop_na() %>% # Drop rows with missing values
-#   clean_names()
-# 
-# ######
-# ECP_GP <- combined_prescriptions %>%
-#   mutate(
-#     date = parse_date_time(paid_date_month, "ym"),
-#     drug_simple = case_when(
-#       str_detect(bnf_item_description, "LEVONO") ~ "Levonorgestrel",
-#       str_detect(bnf_item_description, "ULIPR") ~ "Ulipristal Acetate",
-#       TRUE ~ "Other")) %>%
-#   filter(drug_simple != "Other") %>%
-#   group_by(gp_practice, date, drug = drug_simple) %>% # this time keeping in gp_practice
-#   summarise(total_quantity = sum(paid_quantity, na.rm = TRUE)) %>%
-#   full_join(HB_names, by = c("hbt" = "hb")) %>% # Join with Health Board names
-#   full_join(population_data, by = "hb_name") %>% # Join with population data
-#   mutate(prescriptions_per_10000 = (total_quantity / hb_population)*10000) %>%
-#   left_join(gp_addresses, by = c("gp_practice" = "practice_code")) %>%
-#   #left_join(data_zones, by = "data_zone") %>%
-#   left_join(SIMD, by = "data_zone") %>%
-#   ungroup() %>%
-#   drop_na() %>% # Drop rows with missing values
-#   clean_names()
-# ######
-# 
-# ECP_SIMD_barchart <- ECP_GP %>%
-#   group_by(simd2020v2hb_decile, drug) %>%
-#   summarise(prescriptions_per_10000 = (total_quantity / hb_population)*10000) %>%  # summarise the prescriptions per 10,000
-#   ggplot(aes(x= prescriptions_per_10000, y = factor(simd2020v2hb_decile, levels = 1:10), fill = drug)) +
-#   geom_col() +
-#   theme(legend.position = "bottom")
-# 
-# ECP_SIMD_barchart
+# calculate the number of GPs per health board 
+toal_no_GP_per_hb <- ECP_GP %>% 
+    filter(!gp_practice %in% c(99996, 99997, 99998)) %>% # remove dummy GP practice codes as they do not have a known gp practice code so cannot be mapped to a SIMD.
+  group_by(hb_name) %>%
+  summarise(unique_gp_count_per_hb = n_distinct(gp_practice))
+  
+# calculate average population per GP in a health board 
+pop_per_gp_hb <- population_data %>% 
+  full_join(toal_no_GP_per_hb) %>% 
+  mutate(avg_pop_per_GP = hb_population /unique_gp_count_per_hb)
+
+# join pop_per_gp_hb to ECP_GP 
+ECP_pop_per_gp_hb <- ECP_GP %>% 
+  left_join(pop_per_gp_hb)
+
+# make bar chart
+ECP_SIMD_barchart <- ECP_pop_per_gp_hb %>%
+  group_by(simd2020v2hb_decile, drug) %>%
+  summarise(
+    prescriptions_hb_gp = (total_quantity_per_gp *10000 / avg_pop_per_GP), # summarise the prescriptions per 100,000
+    .groups = "drop"  # Ungroup data after summarisation
+  ) %>%
+  ggplot(aes(x = prescriptions_hb_gp, y = factor(simd2020v2hb_decile, levels = 1:10), fill = drug)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set2", name = "Drug Type") +  # add colour palette
+  labs(
+    title = "Barchart to show how the prescription rate of \n Emergency Contraceptive Pill varies by Scottish Index of Multiple Deprivation",
+    subtitle = "This chart shows the average prescription rate of ECP per SIMD, \n accounting for differences in number of GPs in each SIMD.",
+    x = "Prescriptions per 10,000 women",
+    y = "SIMD Decile \n (1 = Most Deprived, 10 = Least Deprived)",
+    fill = "Drug") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 12, hjust = 0.5),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 10),
+    legend.position = "right",
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 10))
+
+ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart)
+ECP_SIMD_barchart
 ```
 
-Prescribing choices vary per region -  
+Prescribing choices vary per regions  
 
-mean(prescriptions_per_10000, na.rm = TRUE)
 
 
 Data sets to consider exploring: 
 
-```{r}
-# Data sets to consider exploring: 
-#data_zones_2011 <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/395476ab-0720-4740-be07-ff4467141352/download/dz2011_codes_and_labels_21042020.csv") %>% 
-#clean_names()
-
-#SIMD_2020 <- read_csv(here("data", "scottish-index-of-multiple-deprivation.csv")) %>%
-#clean_names()
-
-#gp_addresses_2020 <- read_csv("https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/42391720-7dcb-48a2-8070-b9d63b246ac6/download/practice_contactdetails_oct2020-open-data.csv") %>% 
-#clean_names() %>% 
-#select(practice_code, gp_practice_name, data_zone)
-
-#data_zones <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/395476ab-0720-4740-be07-ff4467141352/download/dz2011_codes_and_labels_21042020.csv") %>% 
-#clean_names() %>% 
-#select(data_zone, data_zone_name)
-```
 
 
 ## Conclusion 
@@ -487,7 +434,6 @@ Data sets to consider exploring:
 
 ### Limitations of the dataset and suggestions for future analysis
 
-antibiotics are prescribed for pneumonia / other infections. Not specific to STIs. Maybe find what percentage of antibiotics for doxy / azithro are prescribed for STIs in scotland and use this as an assumption when completing further analysis?
 
 
 
