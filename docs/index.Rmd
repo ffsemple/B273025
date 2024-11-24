@@ -54,12 +54,12 @@ library(janitor)
 library(gt) 
 library(here)
 library(lubridate)
-library(patchwork)
+library(sf)
+library(ggspatial)
 library(plotly)
-
 ```
 
-I have chosen to look at all prescriptions from 2020 and 2023. To do this I downloaded the prescriptions data for each month from: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community  
+I have chosen to look at all prescriptions from 2019 and 2022. To do this I downloaded the prescriptions data for each month from: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community  
 
 I wanted to explore how many ECP and antibiotics for STIs were prescibed during across 2023.
 
@@ -186,63 +186,50 @@ Accurate National-Level Insights: Better reflects overall prescribing behaviour 
 prescribing rates are weighted by the total population, providing an accurate reflection of overall prescribing behaviour across Scotland.
 
 ```{r}
-total_population <- sum(population_data$hb_population, na.rm=TRUE)
+total_population <- sum(population_data$hb_population, na.rm=TRUE) # calculate total population of Scotland
 
-ECP_presc_sum_month <- ECP_scripts %>%
+# calculate the number of prescriptions of each drug per month
+ECP_by_month <- ECP_scripts %>%
   group_by(date, drug, month, year) %>%
-  summarise(total_quantity_month = sum(paid_quantity, na.rm = TRUE)) %>% 
+  summarise(total_quantity_month = sum(paid_quantity, na.rm = TRUE)) %>%
   ungroup() %>% 
   drop_na(drug) %>% 
   clean_names()
 
-ECP_plot_data_v2 <- ECP_presc_sum_month %>%
+# calculate prescription rate per 100,000 people for each drug and month
+ECP_trend_plot_data <- ECP_by_month %>%
   group_by(drug, year, month) %>% 
-  summarise(prescriptions_per_100000 = (total_quantity_month / total_population)*100000) #%>%   #### 100,000
-# labels / levels ? mutate( year = factor list c() ######### 
+  summarise(prescriptions_per_100000 = (total_quantity_month / total_population)*100000)
 
-ECP_plot <- ECP_plot_data_v2 %>%
-  ggplot(aes(x = month, y = prescriptions_per_100000, group = year)) +
-  # Layer for other years
-  geom_line(
-    data = . %>% filter(year != 2020),
-    aes(linetype = as.factor(year)),
-    color = "grey70",  # Grey for other years
-    size = 0.7
-  ) +
-  # Layer for 2020
-  geom_line(
-    data = . %>% filter(year == 2020),
-    aes(linetype = as.factor(year)),
-    color = "red",  # Highlight 2020 in red
-    size = 0.9
-  ) +
-  facet_wrap(~drug, scales = "free_y") +
-  scale_linetype_manual(
-    values = c("2019" = "dotdash", "2020" = "solid", "2021" = "dashed", "2022" = "dotted"),
-    name = "Year") +
+ECP_trend_plot <- ECP_trend_plot_data %>%
+  ggplot(aes(x = month, y = prescriptions_per_100000, group = year, linetype = year, color = year)) + # plot data for each year on same graph
+  geom_line(aes(size = ifelse(year == "2020", 0.9, 0.7))) + # make the 2020 line slightly thicker to make it stand out 
+  facet_wrap(~drug, scales = "free_y") + # separate the two types of ECP
+  scale_linetype_manual(values = c("2019" = "dotdash", "2020" = "solid", "2021" = "dashed", "2022" = "dotted"),name = "Year") + # make each year identifiable by linte type
+  scale_color_manual(values = c("2019" = "grey70", "2020" = "red", "2021" = "grey70", "2022" = "grey70"),name = "Year") + # make Covid-19 year red (2020 had the longest lockdown, March till May)
+  scale_size_identity() + # Ensures ggplot uses the size values as outlined in geom_line()
+  scale_y_continuous(limits = c(0, NA), breaks = scales::pretty_breaks(n = 5))+ # Ensure y-axis starts at 0 and has evenly spaced breaks 
   labs(
-    title = ("Seasonal Trends in Emergency Contraception Prescribing (2019–2022): \n Accounting for Population-Adjusted National Prescribing Rates"),
-    subtitle = "A four-year analysis of prescribing rates per 100,000 women, \n highlighting the impact of the Covid-19 lockdowns (March–July 2020, shown in red),\n with rates adjusted for population to ensure national-level accuracy",
+    title = "Trends in Emergency Contraception Prescribing 2019–2022 in Scotland.",
+    subtitle = "Four years of population adjusted prescribing rates highlighting the impact of Covid-19 (red)",
     x = "Month",
-    y = "Prescriptions per 100,000 women",
-    #color = "Year Colour"
-  ) +
+    y = "Prescriptions per 100,000 women") +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 12, hjust = 0.5,face = "bold"),
-    plot.subtitle = element_text(size = 10, hjust= 0.5),
-    axis.title.x = element_text(size = 10),
-    axis.title.y = element_text(size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
-    axis.text.y = element_text(size = 8),
-    strip.text = element_text(size = 10),
-    legend.title = element_text(size = 10),
-    legend.text = element_text(size = 8),
-    legend.position = "bottom"
-  )
+    plot.title = element_text(size = 22, hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(size = 16, hjust = 0.5),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    axis.text.y = element_text(size = 9),
+    strip.text = element_text(size = 16),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 16),
+    legend.position = "bottom")
 
-ECP_plot
+ECP_trend_plot
 ```
+
 
 investigate what happened in 2019 - change in prescription practises over time ? 
 did they used to use it for something else? 
@@ -257,82 +244,63 @@ Trends to note:
 It would be interesting to explore if different Health Boards prescribe different amounts of ECP. 
 
 ### Which Health Board is prescribing the most ECP? 
+to see if there is a trend between rate of prescribing of ECP and proportion of young people living in the HB
 
-
-play around: 
 ```{r}
-ECP_table_data <- ECP_scripts %>% 
-  group_by(hb_name, drug) %>%  # Aggregate data by Health Board and drug
-  summarise(
-    total_quantity_4_years = sum(paid_quantity, na.rm = TRUE),  # Total prescriptions over 4 years
-    avg_annual_total_quantity = total_quantity_4_years / 4,  # Average annual prescriptions
-    hb_population = first(hb_population),  # hb_population is consistent within each hb_name
-    .groups = "drop" # ungroup data
-  ) %>%
+# tidy data to make table with columns and values of interest 
+ECP_anual_rate_data <- ECP_scripts %>% 
+  group_by(hb_name, drug) %>%  # aggregate data by Health Board and drug
+  summarise(total_quantity_4_years = sum(paid_quantity, na.rm = TRUE),  # Total prescriptions over 4 years
+    avg_annual_total_quantity = total_quantity_4_years / 4,  # average annual prescriptions
+    hb_population = first(hb_population), # hb_population is consistent within each hb_name
+    .groups = "drop") %>% # ungroup data
   drop_na(drug) %>% # remove rows with no drug values
-  mutate(avg_annual_presc_100000 = avg_annual_total_quantity * 100000 / hb_population) %>% #annual rate of prescriptions per 100,000
-  select(hb_name, drug, avg_annual_presc_100000, hb_population) %>% # select columns before pivot
-  pivot_wider(
-    names_from = drug, 
-    values_from = avg_annual_presc_100000, 
-    values_fill = 0,  # Fill missing values with 0
-    names_glue = "{drug}_rate"  # Rename columns for clarity
-  ) %>% 
-  clean_names() # clean drug_rate column names following pivot
+  mutate(avg_annual_presc_100000 = avg_annual_total_quantity * 100000 / hb_population) %>% # average annual rate of prescriptions per 100,000
+  select(hb_name, drug, avg_annual_presc_100000, hb_population) %>% # select columns of interest before pivot
+  pivot_wider(names_from = drug, values_from = avg_annual_presc_100000, names_glue = "{drug}_rate") %>% # Rename columns for clarity
+  clean_names() # clean column names following pivot
 
-# calculate total prescription rate per health board
-ECP_table_data <- ECP_table_data %>% 
-  mutate(total_ECP_rate = rowSums(select(., levonorgestrel_rate, ulipristal_acetate_rate), na.rm = TRUE)) %>%  # calculate total prescription rate for both drugs
-  arrange(desc(total_ECP_rate)) # Arrange by total rate in descending order
+# calculate total ECP prescription rate per health board
+ECP_anual_rate_data <- ECP_anual_rate_data %>% 
+  mutate(total_ECP_rate = rowSums(select(., levonorgestrel_rate, ulipristal_acetate_rate), na.rm = TRUE)) %>%  #sum rates 
+  arrange(desc(total_ECP_rate)) # arrange by total rate in descending order
 
-#calculate percentage young people per health board to see if there is a trend between rate of prescribing of ECP and proportion of young people living in the HB
-ECP_table_data_buckets <- ECP_table_data %>% 
-  full_join(age_population_data) %>% 
+#calculate percentage young people per health board 
+ECP_anual_rate_data_buckets <- ECP_anual_rate_data %>% 
+  full_join(age_population_data) %>% # to get the population of those aged 16-34 years 
   group_by(hb_name) %>% 
-  mutate(prop_young_ppl_hb = pop_hb_16_34/hb_population) %>% 
+  mutate(prop_young_ppl_hb = pop_hb_16_34/hb_population) %>% # calculate proportion of young people in each health board 
   ungroup()
 
-annual_avg_ECP_table <- ECP_table_data_buckets %>% 
+annual_avg_ECP_table <- ECP_anual_rate_data_buckets %>% 
   select(hb_name, levonorgestrel_rate, ulipristal_acetate_rate, total_ECP_rate,prop_young_ppl_hb) %>% # Select relevant columns
   gt() %>% 
   cols_label(hb_name = "Health Board",
              total_ECP_rate= "Total",
              levonorgestrel_rate= " Levonorgestrel",
              ulipristal_acetate_rate=" Ulipristal Acetate",
-             prop_young_ppl_hb = "Percentage of young people") %>% # Rename the column
-  # Format the columns with numbers to have two decimal places
-  fmt_number(columns = c(levonorgestrel_rate, ulipristal_acetate_rate, total_ECP_rate, prop_young_ppl_hb), decimals = 2) %>% 
-  
-  # Centre the number columns using American spelling
+             prop_young_ppl_hb = "% Aged 16-34 Years") %>% # rename columns to make reader-friendly
+  fmt_number(columns = c(levonorgestrel_rate, ulipristal_acetate_rate, total_ECP_rate, prop_young_ppl_hb), decimals = 0) %>% # no decimal points as false accuracy detracts from the message in the data
   cols_align(align = "center",
-             columns = c(levonorgestrel_rate,ulipristal_acetate_rate, prop_young_ppl_hb)) %>% 
-  # Add an overall summary of the number columns
+             columns = c(levonorgestrel_rate,ulipristal_acetate_rate,total_ECP_rate, prop_young_ppl_hb)) %>%  # centre column names
   grand_summary_rows(columns = c(levonorgestrel_rate,ulipristal_acetate_rate, total_ECP_rate),
                      fns = list("Overall Average" = ~mean(., na.rm = TRUE)),
-                     fmt = list(~ fmt_number(., decimals = 2))) %>% 
-  fmt_percent(columns = prop_young_ppl_hb,
-              decimals = 2) %>%  # make the proportion of young people a percentage  
-  # Add a title and subtitle; md() allows text formating from mark down 
-  tab_header(title = md("**Average Annual Rate of Emergency Contraception Prescriptions by Health Board in Scotland**"),
-             subtitle = md("This table presents the average annual prescription rates of emergency contraception pills (ECP) per 100,000 women, derived from the mean prescription rates across the years 2019 to 2022. Health Boards are ranked in descending order, starting with those with the highest prescription rates.")) %>%
-  # use tab_spanner to add a title to each drug and total column.
-  tab_spanner(
-    label = md("*Prescription rate per 100,000 women*"),
-    columns = c(levonorgestrel_rate,ulipristal_acetate_rate, total_ECP_rate)) %>% 
+                     fmt = list(~ fmt_number(., decimals = 0))) %>%   # add an overall average of the prescription rate columns
+  fmt_percent(columns = prop_young_ppl_hb, decimals = 0) %>%  # add percentage sign
+  tab_header(title = md("**Average Annual Rate of Emergency Contraception Prescriptions by Health Board in Scotland.**"),
+             subtitle = md("Rate per 100,000 women, derived from the mean prescription rates across the years 2019 to 2022. Health Boards are ranked in descending order.")) %>% # add a title and subtitle; md() allows text formatting from mark down 
+  tab_spanner(label = md("*Prescription rate per 100,000 women*"),
+    columns = c(levonorgestrel_rate,ulipristal_acetate_rate, total_ECP_rate)) %>%   # add a title to prescription rate columns.
   tab_source_note(md("*Data from Public Health Scotland. Available from: (https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community)*")) %>% 
   tab_stubhead(md("**2019-2022**")) %>% 
-  tab_footnote(
-    footnote = "includes Capital City, Edinburgh",
-    locations = cells_body(columns = hb_name, rows = 2)
-  ) %>% 
-  tab_footnote(
-    footnote = md("aged 16 to 34"),
-    locations = cells_column_labels(columns = prop_young_ppl_hb)) %>% 
+  tab_footnote(footnote = "includes Capital City, Edinburgh",
+    locations = cells_body(columns = hb_name, rows = 2))%>% 
   opt_stylize(style = 6, color = "cyan")
 
 annual_avg_ECP_table
 ```
 
+western isles relatively high uli prescription commpared to levo - explore if prescribing practices vary by location?
 
 ### How does deprivation on the type of emergency contraceptive prescribed
 
@@ -362,7 +330,7 @@ gp_addresses <- read_csv("https://www.opendata.nhs.scot/dataset/f23655c3-6e23-41
   select(practice_code, gp_practice_name, data_zone)
 
 # Create ECP_GP by using the GP_addresses dataset to map the GP practice code to a datazone. I then used the column datazone to full_join() the SIMD dataset to the prescriptions dataset.
-   
+
 ECP_GP <- ECP_scripts %>%
   filter(!gp_practice %in% c(99996, 99997, 99998)) %>% # remove dummy GP practice codes as they do not have a known gp practice code so cannot be mapped to a SIMD.
   left_join(gp_addresses, by = c("gp_practice" = "practice_code")) %>%
@@ -375,10 +343,10 @@ ECP_GP <- ECP_scripts %>%
 
 # calculate the number of GPs per health board 
 toal_no_GP_per_hb <- ECP_GP %>% 
-    filter(!gp_practice %in% c(99996, 99997, 99998)) %>% # remove dummy GP practice codes as they do not have a known gp practice code so cannot be mapped to a SIMD.
+  filter(!gp_practice %in% c(99996, 99997, 99998)) %>% # remove dummy GP practice codes as they do not have a known gp practice code so cannot be mapped to a SIMD.
   group_by(hb_name) %>%
   summarise(unique_gp_count_per_hb = n_distinct(gp_practice))
-  
+
 # calculate average population per GP in a health board 
 pop_per_gp_hb <- population_data %>% 
   full_join(toal_no_GP_per_hb) %>% 
@@ -420,12 +388,97 @@ ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart)
 ECP_SIMD_barchart
 ```
 
-Prescribing choices vary per regions  
+Prescribing choices vary per regions 
+
+```{r}
+# load the NHS Health board Shapefile downloaded from learn page
+NHS_healthboards <- st_read(here("data", "NHS_healthboards_2019.shp")) %>% 
+  mutate(HBName = paste("NHS", HBName)) %>% # format to match ECP_scripts dataset
+  clean_names()
+
+# calculate the ratio of Lev to Uli prescribed 
+variation_ECP_prescribed <- ECP_scripts %>% 
+  group_by(hb_name,drug) %>% 
+  # calculate the total of Lev and Uli prescribed per health board
+  summarise(total_each_drug_type = sum(paid_quantity, na.rm = TRUE)) %>%
+  drop_na(drug) %>% 
+  #pivot_wider to move drug names to columns 
+  pivot_wider(names_from = drug, values_from = total_each_drug_type) %>%
+  clean_names() %>% # consistency 
+  mutate(levo_to_uli_ratio = levonorgestrel / (levonorgestrel + ulipristal_acetate)) # calculate ratio 
+
+# Join spatial data with variation_ECP_prescribed
+variation_ECP_prescribed <- NHS_healthboards %>%
+  left_join(variation_ECP_prescribed)
+
+#Create map in ggplot
+map_variation_ECP_prescribed <- variation_ECP_prescribed %>%
+  ggplot(aes(fill = levo_to_uli_ratio)) +
+  geom_sf(size = 0.1, colour = "grey50", alpha =0.9) +
+  scale_fill_distiller(palette = "Blues", direction = 1) +
+  labs(title = "Geographical variation in Emergency Contraceptive Pill \n prescribing in Scotland.", 
+       subtitle = "Heatmap showing Levonorgestrel prescriptions as a proportion of total Emergency \n Contraceptive Pill (ECP) prescriptions by Health Board region", 
+       fill = "Levonorgestrel to ECP ratio", caption = "Data Source: Public Health Scotland Prescriptions in the Community, 2019-2022") +
+  coord_sf() +
+  theme_void() +
+  theme(
+    plot.title = element_text(face = "bold", size = 22, hjust=0.5), 
+    plot.subtitle = element_text(size = 16, hjust=0.5), 
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 9, hjust=0.5),
+    legend.direction = "vertical",
+    legend.box = "horizontal") +
+  annotation_scale(location = "tl") +
+  annotation_north_arrow(
+    location = "tl",    
+    pad_y = unit(0.5, "in"),    
+    style = north_arrow_nautical(fill = c("grey40", "white"),line_col = "grey20"))
+
+map_variation_ECP_prescribed
+```
 
 
+```{r}
+# calculate the ratio of Lev to Uli prescribed 
+variation_ECP_prescribed_v2 <- ECP_scripts %>% 
+  group_by(gp_practice,drug) %>% 
+  # calculate the total of Lev and Uli prescribed per health board
+  summarise(total_each_drug_type = sum(paid_quantity, na.rm = TRUE)) %>%
+  drop_na(drug) %>% 
+  #pivot_wider to move drug names to columns 
+  pivot_wider(names_from = drug, values_from = total_each_drug_type) %>%
+  clean_names() %>% # consistency 
+  mutate(levo_to_uli_ratio = levonorgestrel / (levonorgestrel + ulipristal_acetate)) %>% # calculate ratio %>% 
+  drop_na(levo_to_uli_ratio) %>% 
+  full_join(ECP_GP)
 
-Data sets to consider exploring: 
+# make bar chart
+ECP_SIMD_barchart_variations <- variation_ECP_prescribed_v2 %>%
+  #group_by(simd2020v2hb_decile, drug) %>%
+  ggplot(aes(x = factor(simd2020v2hb_decile, levels = 1:10), y = levo_to_uli_ratio, fill = drug)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set2", name = "Drug Type") +  # add colour palette
+  labs(
+    title = "Variation in prescribing practise by SIMD",
+    subtitle = "",
+    x = "SIMD Decile \n (1 = Most Deprived, 10 = Least Deprived)",
+    y = "prescriptions",
+    fill = "Drug") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 12, hjust = 0.5),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 10),
+    legend.position = "right",
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 10))
 
+ECP_SIMD_barchart_variations
+  
+```
 
 
 ## Conclusion 
