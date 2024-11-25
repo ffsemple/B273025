@@ -1,5 +1,5 @@
 ---
-title: "Assessment"
+title: "Assessment: Exploratory analaysis of the factors affecting Emergency Contraceptive prescribing in Scotland"
 author: "B273025"
 date: "`r Sys.Date()`"
 bibliography: "../zotero_citations.json"
@@ -13,12 +13,10 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE, fig.align = "center", fig.width = 8, fig.height = 5) # align figures to centre and prevent them being cut off 
 ```
 
-# Exploratory analaysis of the potential factors affecting emergency contraceptive prescribing patterns in Scotland
-
-## Introduction 
+# Introduction 
 
 Preventing unintended pregnancy is important for both individual wellbeing and public health. Unprotected sex occurs for multiple, complex reasons including sexual assault, reproductive coercion, contraceptive mishaps, and lapses in contraceptive use. Emergency contraception is used to prevent pregnancy following unprotected sex or contraceptive failure. In Scotland emergency contraception can be obtained via a pill or intrauterine device. 
 
@@ -29,13 +27,13 @@ Currently in Scotland there are two types of emergency contraceptive pill (ECP) 
 
 This analysis explores prescribing patterns of ECP using the Public Health Scotland Community Prescriptions Database from 2019 to 2022. Understanding the prescribing patterns of ECP is essential for identifying disparities in access and improving public health strategies. This report addresses the following research questions: 
 
-1) What are the trends in prescribing of ECP between 2019 and 2022? 
+> 1) What are the trends in prescribing of ECP between 2019 and 2022? 
 
-2) How does the ECP prescription rate vary across Health Board regions in Scotland?
+> 2) How does the ECP prescription rate vary across Health Board regions in Scotland?
 
-3) Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
+> 3) Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
 
-4) Is there geographical variation in prescribing practices of ECP by Health Board region?
+> 4) Is there geographical variation in prescribing practices of ECP by Health Board region?
 
 This report aims to identify possible factors influencing ECP prescribing in Scotland.
 
@@ -137,9 +135,9 @@ ECP_scripts <- combined_prescriptions %>%
   mutate(year = factor(year(date)), .after = month) # extract month and year as a factor with labels to help when plotting
 ```
 
-## Key Results 
+# Key Results 
 
-### What are the trends in prescribing of ECP between 2019 and 2022? 
+## What are the trends in prescribing of ECP between 2019 and 2022? 
 
 This plot explores if there is monthly variation in prescribing rate of ECP for the years 2019 to 2022. I included 4 years of consecutive data to see if a one-time event, such as the Covid-19 pandemic or the Common Wealth Games caused any changes in emergency contraception prescribing rate.
 I wanted to see if there was seasonal trends in ECP prescriptions coinciding with events such as Valentines day, University start dates, or national holidays. 
@@ -203,7 +201,7 @@ Due to low prescribing rates of ECP there is stochastic variation on the graphic
 
 * Between February and May of 2020 the prescription rate of Levonorgestrel decreases. This is likely due to decreased sexual activity and risk taking behaviours due to the stringent national 'lockdown' measures introduced between X to Y in response to the Covid-19 pandemic. 
 
-### How does the ECP prescription rate vary across Health Board regions in Scotland? 
+## How does the ECP prescription rate vary across Health Board regions in Scotland? 
 
 This figure explores if there are differences in the average annual prescription rate for each Health Board in Scotland. To explore possible reasons for differences I calculated the proportion of young people in each Health Board to see if there was a trend. 
 
@@ -267,10 +265,9 @@ More remote Health Boards such as NHS Highland and NHS borders had the lowest ra
 
 When comparing the types of ECP prescribed generally levonorgestrel prescribed significantly more than Ulipristal Acetate. However this is not the case in the NHS Western Isles Health Board, where a similar proportion of Levonorgestrel is prescribed to Ulipristal Acetate. This trend is explored more in figure 4 to see whether there is geographical variation in the type of ECP prescribed.
 
-### Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
+## Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
 
 This figure explores if 
-
 
 To measure deprivation I have used the Scottish Index of Multiple Deprivation. I took the SIMD 2020v2 dataset from Public Health Scotland website [available from: https://www.opendata.nhs.scot/gl/dataset/scottish-index-of-multiple-deprivation/resource/acade396-8430-4b34-895a-b3e757fa346e ] as this dataset contains SIMD decile weighted per Health Board population.
 
@@ -332,7 +329,7 @@ ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart, tooltip = "text") # make plot i
 ECP_SIMD_barchart
 ```
 
-### Is there geographical variation in prescribing practices of ECP by Health Board region?
+## Is there geographical variation in prescribing practices of ECP by Health Board region?
 
 I wanted to explore if there was any correlation between the type of contraception being prescribed and deprivation. To do this I made a ratio of levonorgestrel  to total emergency contraception prescriptions. 
 
@@ -391,16 +388,16 @@ map_variation_ECP_prescribed <- variation_ECP_prescribed %>%
 map_variation_ECP_prescribed
 ```
 
-## Conclusion 
+# Conclusion 
 
 prescribing choices are determined by geography, deprivation, age 
 
-### Recommendations from analysis 
+## Recommendations from analysis 
 
-### Limitations of the dataset and suggestions for future analysis
+## Limitations of the dataset and suggestions for future analysis
 additional time and data - directed acyclical graphic to explore this further
 explore the statistical relationships. 
 
-## References 
+# References 
 I used https://gsverhoeven.github.io/post/zotero-rmarkdown-csl/ to set up citations. Chosen BMJ style as common. 
 
