@@ -13,7 +13,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE, fig.align = "center", fig.width = 8, fig.height = 6) # align figures to centre and set dimensions to prevent them being cut off 
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE, fig.align = "center", fig.width = 10, fig.height = 7) # align figures to centre and set dimensions to prevent them being cut off 
 ```
 
 # Introduction 
@@ -180,7 +180,8 @@ ECP_trend_plot <- ECP_trend_plot_data %>%
     strip.text = element_text(size = 12),
     legend.title = element_text(size = 12),
     legend.text = element_text(size = 12),
-    legend.position = "bottom")
+    legend.position = "bottom",
+    plot.margin = margin(10, 30, 10, 30)) # increase size of margins
 
 ECP_trend_plot
 ```
@@ -322,11 +323,6 @@ ECP_SIMD_barchart <- toal_no_GP_per_SIMD %>%
     legend.text = element_text(size = 10))
 
 ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart, tooltip = "text") # make plot interactive
-ECP_SIMD_barchart
-
-# Convert the ggplot to a Plotly interactive plot and center it
-ECP_SIMD_barchart <- htmltools::div(plotly::ggplotly(ECP_SIMD_barchart, tooltip = "text", width = 800, height = 400), style = "text-align: center;")
-
 ECP_SIMD_barchart
 ```
 
