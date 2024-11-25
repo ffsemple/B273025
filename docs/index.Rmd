@@ -8,12 +8,13 @@ output:
   html_document: 
     code_download: true
     toc: true
+    number_sections: true
     theme: flatly
 
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE, fig.align = "center", fig.width = 8, fig.height = 5) # align figures to centre and prevent them being cut off 
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE, fig.align = "center", fig.width = 8, fig.height = 5) # align figures to centre and set dimensions to prevent them being cut off 
 ```
 
 # Introduction 
@@ -326,6 +327,11 @@ ECP_SIMD_barchart <- toal_no_GP_per_SIMD %>%
     legend.text = element_text(size = 10))
 
 ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart, tooltip = "text") # make plot interactive
+ECP_SIMD_barchart
+
+# Convert the ggplot to a Plotly interactive plot and center it
+ECP_SIMD_barchart <- htmltools::div(plotly::ggplotly(ECP_SIMD_barchart, tooltip = "text", width = 800, height = 400), style = "text-align: center;")
+
 ECP_SIMD_barchart
 ```
 
