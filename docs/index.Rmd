@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE
 
 # Introduction 
 
-Preventing unintended pregnancy is critical for individual well-being and public health. Unprotected sex occurs for multiple, complex reasons including sexual assault, reproductive coercion, contraceptive mishaps, and lapses in contraceptive use @cleland_etal14 . Emergency contraception prevents pregnancy following unprotected sex or contraceptive failure. In Scotland emergency contraception is available as either a pill or intrauterine device. Oral contraceptives are the most used form, making up 90% of emergency contraceptive prescriptions@Emergency23. 
+Preventing unintended pregnancy is critical for individual well-being and public health. Unprotected sex occurs for multiple, complex reasons including sexual assault, reproductive coercion, contraceptive mishaps, and lapses in contraceptive use @cleland_etal14 . Emergency contraception prevents pregnancy following unprotected sex or contraceptive failure. In Scotland emergency contraception is available as either a pill or intrauterine device. Oral contraceptives are the most commonly used, making up 90% of emergency contraceptive prescriptions@Emergency23. 
 
 Pharmacies in Scotland dispense two types of emergency contraceptive pills (ECP):
 
@@ -139,7 +139,7 @@ ECP_scripts <- combined_prescriptions %>%
 ```{r time_trend, fig.cap= "Figure 1: Prescribing trends of Emergency Contraception from 2019 to 2022"}
 
 # calculate total population of Scotland
-total_population <- sum(population_data$hb_population, na.rm=TRUE) 
+total_female_population <- sum(population_data$hb_population, na.rm=TRUE) 
 
 # calculate the number of prescriptions of each drug per month
 ECP_by_month <- ECP_scripts %>%
@@ -152,7 +152,7 @@ ECP_by_month <- ECP_scripts %>%
 # calculate prescription rate per 100,000 people for each drug and month
 ECP_trend_plot_data <- ECP_by_month %>%
   group_by(drug, year, month) %>% 
-  summarise(prescriptions_per_100000 = (total_quantity_month / total_population)*100000)
+  summarise(prescriptions_per_100000 = (total_quantity_month / total_female_population)*100000)
 
 ECP_trend_plot <- ECP_trend_plot_data %>%
   ggplot(aes(x = month, y = prescriptions_per_100000, group = year, linetype = year, color = year)) + # plot data for each year on same graph
@@ -184,19 +184,19 @@ ECP_trend_plot <- ECP_trend_plot_data %>%
 ECP_trend_plot
 ```
 
-Figure 1 explores if there is monthly variation in prescribing rate of ECP for the years 2019 to 2022. I included 4 years of consecutive data to see if a one-time event, such as the Covid-19 pandemic or the Common Wealth Games affects ECP prescribing rate. 
+Figure 1 explores the monthly variation in prescribing rate of ECP from 2019 to 2022. 4 consecutive years of data were analysed to investigate whether specific events, such as the Covid-19 pandemic or the Common Wealth Games influenced ECP prescribing rates. 
 
-Due to low prescribing rates of ECP there is stochastic variation on graphical representation of the data. Interesting trends to note include:
+Interesting trends to note include:
 
-* Levonorgestrel is more commonly prescribed than Ulipristal Acetate. Each month an average of 150 prescriptions of Levonorgestrel and 3 prescriptions of Ulipristal Acetate are dispensed per 100,000 women across Scotland. 
+* **Levonorgestrel is more commonly prescribed than Ulipristal Acetate.** Each month an average of 150 prescriptions of Levonorgestrel and 3 prescriptions of Ulipristal Acetate are dispensed per 100,000 women across Scotland. 
 
-* The prescribing rate of Levonorgestrel has decreased each year between 2019 to 2022. This may be due to public health interventions to encourage use of long-acting reversible contraception, reducing the need for ECP. Alternatively this decrease may be due to difficulties in accessing ECP after the Covid-19 pandemic. 
+* **The prescribing rate of Levonorgestrel has decreased annually between 2019 and 2022.** This trend may reflect public health efforts to promote long-acting reversible contraception (LARC), thereby reducing the need for ECP. @Long Alternatively it could result from challenges in accessing ECP during the Covid-19 pandemic. 
 
-* There is a significant decrease in the prescription rate of Ulipristal Acetate between 2019 and all consecutive years. This likely reflects the change in prescription guidance in 2020, where the European Medicines Agency recommended withdrawing Ulipristal Acetate as a treatment for uterine fibroids due to safety concerns. Prescriptions of Ulipristal Acetate from 2020 are specific for ECP.  
+* **A significnat reduction in Ulipristal Acetate prescriptions is observed from 2020 onwards.** Due to low prescribing rates of Ulipristal Acetate there is some stochastic variation however the downward trend in 2020 is clear. This likely correspounds to the European Medicines Agency's 2020 guidance recommending teh withdrawal of Ulipristal Acetate for the treatment for uterine fibroids due to safety concerns. From 2020, prescriptions of Ulipristal Acetate appear specific to ECP use only. @Ulipristal20   
 
-* In each year there are peaks in the Summer months suggesting there may be a 'Summer of Love'.
+* Seasonal peaks are obserevd in the summer months of all years. This suggests an increased demand for ECP during what could be described as a **'Summer of Love'**.
 
-* Between February and May of 2020 the prescription rate of Levonorgestrel decreases greatly. This coincides with the Phase 1 Covid-19 lockdown. This suggests that the national 'lockdown' reduced opportunity to engage in unprotected sexual intercourse. 
+* **A marked decline in Levonorgestrel prescriptions ocurred between February and May of 2020.** This coincides with the Phase 1 Covid-19 lockdown, suggestring that national lockdown may have reduced opportunities for unprotected sexual intercourse. 
 
 ## How does the ECP prescription rate vary by Health Board regions in Scotland? 
 
@@ -252,15 +252,19 @@ annual_avg_ECP_table <- ECP_anual_rate_data_young %>%
 annual_avg_ECP_table
 ```
 
-Table 1 shows that NHS Greater Glasgow and Clyde, and NHS Lothian have the highest annual ECP prescription rate. Interestingly these Health Board regions contain the major Scottish cities, Glasgow and Edinburgh. 
+Table 1 presents the annual prescription rate of ECP per Health Board, alongside the proportion of young people living in each Health Board. 
 
-Generally the health boards with the highest annual ECP prescription rate also had the highest proportion of young people living in their health board region. This may suggest that young people aged 16 to 34 years are more likely to require emergency contraception.
+Key points to note:
 
-NHS Ayrshire and Arran is an outlier to this trend having the third highest ECP prescription rate, and yet a relatively smaller proportion of young people living in this health board (19%). This needs further exploration, perhaps indicating that under 16s or over 35s are using the ECP services more in this region. 
+* **NHS Greater Glasgow and Clyde and NHS Lothian have the highest annual ECP prescription rate.** These regions encompass Scotland's largest cities, Glasgow and Edinburgh, which may contribute to higher demand for ECP services.
 
-More remote and rural Health Boards such as NHS Highland and NHS Borders had the lowest rate of ECP prescribing. They also had a smaller proportion of young people living in their health board.
+* **Health boards with higher ECP prescription rates generally have a higher proportion of young people.** This suggests that young people aged 16 to 34 years are more likely to require emergency contraception, in keeping with current literature.@mehta_etal22 
 
-When comparing the type of ECP prescribed table 1 shows that levonorgestrel is more commonly prescribed than Ulipristal Acetate. However this is not the case in the NHS Western Isles Health Board, where a similar proportion of Levonorgestrel is prescribed to Ulipristal Acetate. This perhaps highlights disparity in the prescribing practices by health board region. This is explored further in figure 3.
+* **NHS Ayrshire and Arran is an outlier.** Despite having the third highest ECP prescription rate, it has a relatively smaller population of young people (19%). This warrants further exploration, as it may indicate greater use of ECP services by under 16s or over 35s in this region helping to guide targeted interventions.  
+
+* **Remote and rural Health Boards such as NHS Highland and NHS Borders had the lowest rate of ECP prescribing.** They also had a smaller proportion of young people living in their health board, which may explain this observation.
+
+* **Levonorgestrel is more commonly prescribed than Ulipristal Acetate across most Health Boards.** However, in the NHS Western Isles Health Board the prescribing rates for Levonorgestrel and Ulipristal Acetate are nearly equal This variation may reflect disparities in prescribing practices between Health Boards. This is explored further in figure 3.
 
 ## Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
 
@@ -321,17 +325,19 @@ ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart, tooltip = "text") # make plot i
 ECP_SIMD_barchart
 ```
 
-Generally as SIMD decile increases the number of prescriptions of ECP decreases. GPs in SIMD1, the most deprived areas, prescribe the most ECP whilst increasing affluence is related to decreasing number of ECP prescribed. This suggests those in deprived areas are utilising ECP more, highlighting an inequality in health need. Perhaps this disparity is due to education, safe practices, environmental factors, access to long acting-reversible contraception. 
+Generally as SIMD decile increases the number of ECP prescriptions decreases. GPs in SIMD1, the most deprived areas, prescribe the most ECP, whilst increasing affluence is associated with a decline in ECP prescriptions. This suggests that individuals from more deprived areas utilise ECP services more frequently, highlighting a potential inequality in health needs. 
+
+This disparity may be due to factors such as education, awareness of safe sexual practices, environmental influences, or limited access to long-acting reversible contraception (LARC). Further investigation into these factors is essential to address this inequality. 
 
 ## Is there geographical variation in the prescribing practices of ECP by Health Board region?
 
-I wanted to explore if there was any correlation between the type of contraception being prescribed and the location of the pharmacy. To do this I calculated the ratio of total levonorgestrel prescriptions to total emergency contraception prescriptions for each Health Board Region.
+This analysis explores if there was any correlation between the type of contraception prescribed and the location of the pharmacy. The ratio of total Levonorgestrel prescriptions to total emergency contraception prescriptions was calculated for each Health Board Region using the formula:
 
 $$
-\frac{Levonorgestrel}{Levonorgestrel + Ulipristal Acetate}
+\frac{Levonorgestrel}{Levonorgestrel + Ulipristal Acetate} = Ratio
 $$
 
-A score close to one suggest the majority of prescriptions in this region are Levonorgestrel, whilst a score closer to zero indicates the majority of prescriptions are Ulipristal Acetate. This is a useful way of identifying variation in prescribing practices. 
+A score close to 1 indicates that the majority of prescriptions in this region are for Levonorgestrel, whilst a score closer to 0 suggests that the majority of prescriptions are Ulipristal Acetate. This approach provides a useful way of identifying variation in prescribing practices. 
 
 Figure 3:
 ```{r geog_figure, fig.cap= ("Figure 3: Heatmap exploring geographical variation in Emergency Contraception Pill prescribing")}
@@ -381,32 +387,37 @@ map_variation_ECP_prescribed <- variation_ECP_prescribed %>%
 map_variation_ECP_prescribed
 ```
 
-Health Board Regions in central Scotland predominantly prescribe Levonorgestrel. More remote and rural Health Board regions such as the NHS Western Isles appear to prescribe more Ulipristal Acetate. This difference in prescribing practice may highlight a disparity in ability to quickly access emergency contraception in remote and rural regions. Patients may present later to health services later, meaning prescribers dispense Ulipristal Acetate which has the longer time frame of 5 day. Alternatively this variation in prescribing practise may be due to differences in prescriber preferences in more remote areas.
+Health Board Regions in central Scotland predominantly prescribe Levonorgestrel, where as more remote and rural Health Board regions, such as the NHS Western Isles, prescribe higher proportions of Ulipristal Acetate. This difference in prescribing practices may reflect disparities in access to emergency contraception in remote and rural regions. Patients in these regions may present later to health services later, prompting prescribers to dispense Ulipristal Acetate due to its longer efficacy window. Alternatively, this variation could be attributed to differences in prescriber preferences or guidelines in more remote areas.
 
 # Conclusion 
 
-Prescriptions of ECP are decreasing over the years. During 2020 there was a significant reduction in prescription of Levonorgestrel likely due to Covid-19 lockdown. When looking at Ulipristal Acetate a clear reduction from 2019 to 2020 onwards reflects change in prescribing guidance, no longer prescribed for uterine fibroids. 
+Prescriptions of emergency contraceptive pills (ECP) have decreased over the years 2019 to 2022. In 2020, there was a notable reduction in Levonorgestrel prescriptions, likely influenced by the Covid-19 lockdown. Ulipristal Acetate had a marked decline from 2019 onwards likely reflecting updated prescribing guidance, which discontinued its use in the treatment of uterine fibroids.
 
-Health Board regions with more young people and big cities had a higher rate of ECP precriptions. Ayr and Arran was a slight outlier to this pattern having a slightly reduced YP population and yet high prevelance of ECP prescription. Interesting to explore this further. 
+Health Board regions with larger populations of young people and major cities had higher rates of ECP prescriptions, whilst more remote regions with a smaller proportion of young people had a lower ECP prescription rate. 
 
-More ECPs were perscribed with increasing deprivation. 
+ECP prescriptions were more prevalent in areas of greater deprivation.
 
-Geographicly - more remote pharmacies appeared to prescribe higher amounts of Ulipristal Acetate. Is this due to challenges in accessing pharmacy within 48 hours of unprotected sex, 
+Geographically, remote pharmacies appeared to prescribe higher proportions of Ulipristal Acetate. This may be due to challenges in accessing pharmacies within 48 hours of unprotected sex, necessitating the use of Ulipristal Acetate, which has a longer efficacy window.
 
-In conclusion prescribing patterns of ECP are determined by societal events, such as Covid or Summer, age, geography and deprivation.    
+In conclusion, ECP prescribing patterns are influenced by multiple factors including societal events such as the Covid-19 pandemic, age, deprivation, and geography.
 
 ## Recommendations from analysis 
-This report highlights that there are disparities in prescribing of emergency contraception across geography and social groups in Scotland. Further investigations into the reasons behind these trends is necessary to inform future sexual health policy making and reduce health inequality.
 
-## Limitations of the dataset and suggestions for future analysis
+This report highlights significant disparities in the prescribing of emergency contraception across different geographic regions and levels of deprivation in Scotland. Further research is needed to understand the underlying causes of these trends, considering if there are barriers to access or differences in prescriber practices. These insights will be crucial for informing future sexual health policies and interventions aimed at reducing health inequalities and ensuring equitable access to emergency contraception.
 
-This report assumes that Levonorgestrel and Ulipristal Acetate are dispensed purely for emergency contraception, and have no off-licence uses.
+## Limitations of the dataset
 
-Differences in the volume of ECP prescribed in Health Boards may be due to patients living in one area but accessing ECP from another Health Board. 
+* This report assumes that Levonorgestrel and Ulipristal Acetate are dispensed exclusively for emergency contraception, wihtout considering potential off-licence uses. 
 
-Prescription dataset had 'dummy practice codes' for prescriptions which did not have a practice code. This excluded a large number of ECP prescriptions from the ECP-deprivation analysis as it was impossible to link them to a datazone and subsequent SIMD decile. 
+* Differences in the volume of ECP prescribed across Health Boards may result from patients living in one Health Board region but obtaining their ECP from a pharmacy in another Health Board region. This may result in inaccuracies in attributing prescription rates to specific Health Boards.
 
-With additional time it would be interesting to design a directed acyclic graphic to visually and mathematically model the probabilistic relationships between variables such as age, deprivation and geography influencing prescribing patterns in Scotland. It would be interesting to explore whether there are statistical relationships in the trends observed in this report. 
+* The prescription dataset included 'dummy practice codes' for prescriptions which lacked a specific practice code. This excluded a large number of ECP prescriptions from the ECP-deprivation analysis as it was impossible to link the prescriptions to a datazone and subsequent SIMD decile. This may impact the accuracy of the analysis.
+
+## Suggestions for future analysis
+
+* With additional time it would be interesting to design a Directed Acyclic Graphic to visually and mathematically model the probabilistic relationships between variables such as age, deprivation and geography on ECP prescribing patterns in Scotland. 
+
+* It would be interesting to conduct statistical analysis to explore the trends in this report. 
 
 # References 
 I linked this rmd to Zotero Referencing Software to produce in text citations with an updating bibliography. I chose to format my refernces in BMJ house style as this is commonly used in medical literature.

@@ -6224,16 +6224,649 @@
 		}
 	},
 	{
-		"id": "MicroinductionBuprenorphineNaloxone",
-		"type": "webpage",
-		"title": "Microinduction of Buprenorphine/Naloxone: A Review of the Literature - Ahmed - 2021 - The American Journal on Addictions - Wiley Online Library",
-		"URL": "https://onlinelibrary.wiley.com/doi/10.1111/ajad.13135",
+		"id": "gao_etal17",
+		"type": "article-journal",
+		"abstract": "The CRISPR-Cas9 system is a widely utilized platform for transgenic animal production in various species, although its off-target effects should be addressed. Several applications of this tool have been proposed in model animals but remain insufficient for transgenic livestock production.",
+		"container-title": "Genome Biology",
+		"DOI": "10.1186/s13059-016-1144-4",
+		"ISSN": "1474-760X",
+		"issue": "1",
+		"journalAbbreviation": "Genome Biology",
+		"page": "13",
+		"source": "BioMed Central",
+		"title": "Single Cas9 nickase induced generation of NRAMP1 knockin cattle with reduced off-target effects",
+		"URL": "https://doi.org/10.1186/s13059-016-1144-4",
+		"volume": "18",
+		"author": [
+			{
+				"family": "Gao",
+				"given": "Yuanpeng"
+			},
+			{
+				"family": "Wu",
+				"given": "Haibo"
+			},
+			{
+				"family": "Wang",
+				"given": "Yongsheng"
+			},
+			{
+				"family": "Liu",
+				"given": "Xin"
+			},
+			{
+				"family": "Chen",
+				"given": "Linlin"
+			},
+			{
+				"family": "Li",
+				"given": "Qian"
+			},
+			{
+				"family": "Cui",
+				"given": "Chenchen"
+			},
+			{
+				"family": "Liu",
+				"given": "Xu"
+			},
+			{
+				"family": "Zhang",
+				"given": "Jingcheng"
+			},
+			{
+				"family": "Zhang",
+				"given": "Yong"
+			}
+		],
 		"accessed": {
 			"date-parts": [
 				[
 					"2024",
 					11,
+					12
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2017",
+					2,
+					1
+				]
+			]
+		}
+	},
+	{
+		"id": "Bovine",
+		"type": "webpage",
+		"title": "Bovine Tuberculosis (TB) - DairyNZ | DairyNZ",
+		"URL": "https://www.dairynz.co.nz/biosecurity/diseases/bovine-tuberculosis/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					12
+				]
+			]
+		}
+	},
+	{
+		"id": "Government",
+		"type": "webpage",
+		"title": "Government announces TB Eradication Strategy refresh to end the badger cull – Defra in the media",
+		"URL": "https://deframedia.blog.gov.uk/2024/09/02/government-announces-tb-eradication-strategy-to-end-the-badger-cull/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					12
+				]
+			]
+		}
+	},
+	{
+		"id": "Gene",
+		"type": "webpage",
+		"abstract": "Gene editing is a genetic manipulation in which a living organism’s genomic DNA is deleted, inserted, replaced, or modified.",
+		"language": "en",
+		"title": "Gene Editing (CRISPR/Cas9)",
+		"URL": "https://www.moleculardevices.com/applications/gene-editing-with-crispr-engineering",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					12
+				]
+			]
+		}
+	},
+	{
+		"id": "Contingency20",
+		"type": "webpage",
+		"abstract": "Contingency planning for bovine TB - Bovine TB poses a significant challenge to the cattle farming industry and costs the taxpayer over £100 million every",
+		"language": "en-GB",
+		"title": "Contingency planning for bovine TB | TB Hub",
+		"URL": "https://tbhub.co.uk/preventing-tb-breakdowns/contingency-planning-for-bovine-tb/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					12
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2020",
+					1,
+					5
+				]
+			]
+		}
+	},
+	{
+		"id": "ormandy_etal11",
+		"type": "article-journal",
+		"container-title": "The Canadian Veterinary Journal",
+		"issue": "5",
+		"language": "en",
+		"note": "PMID: 22043080",
+		"page": "544",
+		"source": "pmc.ncbi.nlm.nih.gov",
+		"title": "Genetic engineering of animals: Ethical issues, including welfare concerns",
+		"title-short": "Genetic engineering of animals",
+		"URL": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3078015/",
+		"volume": "52",
+		"author": [
+			{
+				"family": "Ormandy",
+				"given": "Elisabeth H."
+			},
+			{
+				"family": "Dale",
+				"given": "Julie"
+			},
+			{
+				"family": "Griffin",
+				"given": "Gilly"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					12
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2011",
+					5
+				]
+			]
+		}
+	},
+	{
+		"id": "http://zotero.org/users/6669247/items/76U7VHSZ",
+		"type": "document",
+		"title": "Data+Saves+Lives+Toolkit+2.0+key+facts.pdf",
+		"URL": "https://static1.squarespace.com/static/5cc8208b90f904c71c744000/t/6554d6da46fe1e07382ae397/1700058842861/Data+Saves+Lives+Toolkit+2.0+key+facts.pdf",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					13
+				]
+			]
+		}
+	},
+	{
+		"id": "Usher",
+		"type": "webpage",
+		"abstract": "Learn about Usher Syndrome, including symptoms, causes, and treatments. If you or a loved one is affected by this condition, visit NORD to find resources and",
+		"language": "en-US",
+		"title": "Usher Syndrome - Symptoms, Causes, Treatment | NORD",
+		"URL": "https://rarediseases.org/rare-diseases/usher-syndrome/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					16
+				]
+			]
+		}
+	},
+	{
+		"id": "Ushera",
+		"type": "webpage",
+		"abstract": "Usher syndrome is an inherited condition that affects both hearing and vision.",
+		"container-title": "Retina UK",
+		"language": "en",
+		"title": "Usher syndrome",
+		"URL": "https://retinauk.org.uk/information-and-support/about-inherited-sight-loss/types-of-inherited-sight-loss/usher-syndrome/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					16
+				]
+			]
+		}
+	},
+	{
+		"id": "lonborg-moller_etal20",
+		"type": "article-journal",
+		"abstract": "This commentary article is co-authored by a patient with Usher syndrome type 2A. The patient kindly shares her experience of living a life marked by the severe dual sensory loss associated with Usher syndrome. The experiences of the patient are put ...",
+		"container-title": "Ophthalmology and Therapy",
+		"DOI": "10.1007/s40123-020-00258-6",
+		"issue": "3",
+		"language": "en",
+		"note": "PMID: 32388634",
+		"page": "1",
+		"source": "pmc.ncbi.nlm.nih.gov",
+		"title": "Living with Usher Syndrome: Patient and Physician Perspectives",
+		"title-short": "Living with Usher Syndrome",
+		"URL": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7406578/",
+		"volume": "9",
+		"author": [
+			{
+				"family": "Lønborg-Møller",
+				"given": "Helene"
+			},
+			{
+				"family": "Subhi",
+				"given": "Yousif"
+			},
+			{
+				"family": "Kessel",
+				"given": "Line"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					16
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2020",
+					7,
+					31
+				]
+			]
+		}
+	},
+	{
+		"id": "toms_etal20",
+		"type": "article-journal",
+		"abstract": "Usher syndrome has three subtypes, each being clinically and genetically heterogeneous characterised by sensorineural hearing loss and retinitis pigmentosa (RP), with or without vestibular dysfunction. It is the most common cause of deaf–blindness ...",
+		"container-title": "Therapeutic Advances in Ophthalmology",
+		"DOI": "10.1177/2515841420952194",
+		"language": "en",
+		"note": "PMID: 32995707",
+		"page": "2515841420952194",
+		"source": "pmc.ncbi.nlm.nih.gov",
+		"title": "Usher syndrome: clinical features, molecular genetics and advancing therapeutics",
+		"title-short": "Usher syndrome",
+		"URL": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7502997/",
+		"volume": "12",
+		"author": [
+			{
+				"family": "Toms",
+				"given": "Maria"
+			},
+			{
+				"family": "Pagarkar",
+				"given": "Waheeda"
+			},
+			{
+				"family": "Moosajee",
+				"given": "Mariya"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					16
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2020",
+					9,
+					17
+				]
+			]
+		}
+	},
+	{
+		"id": "yan_liu10",
+		"type": "article-journal",
+		"abstract": "Usher syndrome (USH) comprises a group of autosomal recessively inherited disorders characterized by a dual sensory impairment of the audiovestibular and visual systems. Three major clinical subtypes (USH type I, USH type II and USH type III) are distinguished on the basis of the severity of the hearing loss, the presence or absence of vestibular dysfunction and the age of onset of retinitis pigmentosa (RP). Since the cloning of the first USH gene (MYO7A) in 1995, there have been remarkable advances in elucidating the genetic basis for this disorder, as evidence for 11 distinct loci have been obtained and genes for 9 of them have been identified. The USH genes encode proteins of different classes and families, including motor proteins, scaffold proteins, cell adhesion molecules and transmembrane receptor proteins. Extensive information has emerged from mouse models and molecular studies regarding pathogenesis of this disorder and the wide phenotypic variation in both audiovestibular and/or visual function. A unifying hypothesis is that the USH proteins are integrated into a protein network that regulates hair bundle morphogenesis in the inner ear. This review addresses genetics and pathological mechanisms of USH. Understanding the molecular basis of phenotypic variation and pathogenesis of USH is important toward discovery of new molecular targets for diagnosis, prevention and treatment of this debilitating disorder.",
+		"container-title": "Journal of Human Genetics",
+		"DOI": "10.1038/jhg.2010.29",
+		"ISSN": "1435-232X",
+		"issue": "6",
+		"journalAbbreviation": "J Hum Genet",
+		"language": "en",
+		"license": "2010 The Japan Society of Human Genetics",
+		"note": "publisher: Nature Publishing Group",
+		"page": "327-335",
+		"source": "www.nature.com",
+		"title": "Genetics and pathological mechanisms of Usher syndrome",
+		"URL": "https://www.nature.com/articles/jhg201029",
+		"volume": "55",
+		"author": [
+			{
+				"family": "Yan",
+				"given": "Denise"
+			},
+			{
+				"family": "Liu",
+				"given": "Xue Z."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					16
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2010",
 					6
+				]
+			]
+		}
+	},
+	{
+		"id": "Emergency",
+		"type": "post-weblog",
+		"abstract": "How to get emergency contraception including the morning after pill or IUD if you've had unprotected sex",
+		"container-title": "NHS inform",
+		"language": "en-GB",
+		"title": "Emergency contraception",
+		"URL": "https://www.nhsinform.scot/healthy-living/contraception/emergency-contraception/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					24
+				]
+			]
+		}
+	},
+	{
+		"id": "Emergencya",
+		"type": "post-weblog",
+		"abstract": "How to get emergency contraception including the morning after pill or IUD if you've had unprotected sex",
+		"container-title": "NHS inform",
+		"language": "en-GB",
+		"title": "Emergency contraception",
+		"URL": "https://www.nhsinform.scot/healthy-living/contraception/emergency-contraception/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					25
+				]
+			]
+		}
+	},
+	{
+		"id": "cleland_etal14",
+		"type": "article-journal",
+		"abstract": "Several options for emergency contraception are available in the United States. This article describes each method, including efficacy, mode of action, safety, side effect profile and availability. The most effective emergency contraceptive is the copper IUD, followed by ulipristal acetate and levonorgestrel pills. Levonorgestrel is available for sale without restrictions, while ulipristal acetate is available with prescription only, and the copper IUD must be inserted by a clinician. Although EC pills have not been shown to reduce pregnancy or abortion rates at the population level, they are an important option for individual women seeking to prevent pregnancy after sex.",
+		"container-title": "Clinical obstetrics and gynecology",
+		"DOI": "10.1097/GRF.0000000000000056",
+		"ISSN": "0009-9201",
+		"issue": "4",
+		"journalAbbreviation": "Clin Obstet Gynecol",
+		"note": "PMID: 25254919\nPMCID: PMC4216625",
+		"page": "741-750",
+		"source": "PubMed Central",
+		"title": "Emergency contraception review: evidence-based recommendations for clinicians",
+		"title-short": "Emergency contraception review",
+		"URL": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4216625/",
+		"volume": "57",
+		"author": [
+			{
+				"family": "Cleland",
+				"given": "Kelly"
+			},
+			{
+				"family": "Raymond",
+				"given": "Elizabeth G."
+			},
+			{
+				"family": "Westley",
+				"given": "Elizabeth"
+			},
+			{
+				"family": "Trussell",
+				"given": "James"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					25
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2014",
+					12
+				]
+			]
+		}
+	},
+	{
+		"id": "Emergency23",
+		"type": "post-weblog",
+		"abstract": "Explore the latest emergency contraceptive statistics at sexual and reproductive health services among women in the UK 2022/23.",
+		"language": "en-GB",
+		"note": "section: Emergency Contraceptive",
+		"title": "Emergency Contraceptive Statistics 2023 | Click2Pharmacy",
+		"URL": "https://click2pharmacy.co.uk/emergency-contraceptive-statistics-2023/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					25
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2023",
+					12,
+					21
+				]
+			]
+		}
+	},
+	{
+		"id": "Long",
+		"type": "webpage",
+		"title": "Long Acting Reversible Methods of Contraception (LARC) in Scotland - Year ending 31 March 2022 - Long Acting Reversible Contraception (LARC) Key Clinical Indicator (KCI) - Publications - Public Health Scotland",
+		"URL": "https://publichealthscotland.scot/publications/long-acting-reversible-contraception-larc-key-clinical-indicator-kci/long-acting-reversible-methods-of-contraception-larc-in-scotland-year-ending-31-march-2022/",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					25
+				]
+			]
+		}
+	},
+	{
+		"id": "mehta_etal22",
+		"type": "article-journal",
+		"abstract": "Purpose:\nIn 2013, age restrictions for adolescents on over-the-counter access were removed for “Plan B One-Step”, a single oral medication option for emergency contraception use. Restrictions on generic options of the emergency contraceptive pill (ECP) were removed in 2014.\n\nMethods:\nNational Survey of Family Growth data were used to assess the prevalence of ever use of ECPs among sexually experienced female adolescents and young adults (AYA) aged 15–24 years (2015–2017 sample), and trends in indicators of ECP use and acquisition (2006–2017 samples). Prevalence estimates were obtained by age subgroups for 15–17, 18–19, and 20–24 years. Statistical significance was determined using an alpha of .05 and 95% confidence intervals calculated around the point estimates.\n\nResults:\nThe weighted estimate of sexually experienced female AYA in the United States ranged from 13.3 million in 2006–2008 to 12.7 million in 2015–2017. The prevalence of ever ECP use was 18.2% (95% CI 15.7–21.1) and 31.8% (95% CI 26.9–37.1) in 2006–2008 and 2015–2017, respectively. Ever use in 2015–2017 varied by age group, number of lifetime opposite-sex partners and abortions, and experience of nonconsensual sex. In 2008–2010, 46.1% (95% CI 36.0–56.5) of respondents last obtained ECPs at community health or family planning clinics, and 31.8% (95% CI 22.9–42.2) last obtained ECPs at a pharmacy compared to 18.1% (95% CI 12.0–26.4) and 70.1% (95% CI 60.6–78.1) respectively in 2015–2017. Prevalence of provider counseling about emergency contraception in female AYA regardless of prior sexual experience in the past 12 months remained at or below 5% from 2006 to 2017.\n\nConclusion:\nIncreasing access to ECPs over-the-counter may have contributed to notable increases in reported ever use of ECPs and in the receipts from a pharmacy among AYA between 2006 and 2017. AYA may benefit if pharmacists and healthcare providers increase reproductive health counseling.",
+		"container-title": "The Journal of adolescent health : official publication of the Society for Adolescent Medicine",
+		"DOI": "10.1016/j.jadohealth.2022.01.229",
+		"ISSN": "1054-139X",
+		"issue": "1",
+		"journalAbbreviation": "J Adolesc Health",
+		"note": "PMID: 35351354\nPMCID: PMC10982874",
+		"page": "86-93",
+		"source": "PubMed Central",
+		"title": "Trends in Emergency Contraceptive Use Among Adolescents and Young Adults, 2006–2017",
+		"URL": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10982874/",
+		"volume": "71",
+		"author": [
+			{
+				"family": "Mehta",
+				"given": "Sagar D."
+			},
+			{
+				"family": "Kulkarni",
+				"given": "Aniket D."
+			},
+			{
+				"family": "Pazol",
+				"given": "Karen"
+			},
+			{
+				"family": "Koumans",
+				"given": "Emilia H."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					25
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2022",
+					7
+				]
+			]
+		}
+	},
+	{
+		"id": "OpenAthens",
+		"type": "webpage",
+		"title": "OpenAthens / Sign in",
+		"URL": "https://login.openathens.net/auth/gen?t=%2Fsaml%2F2%2Fsso%2F_%2Fc%2Foafed%3FSAMLRequest%3DfZJRT8IwFIX%252FytL3rVudKA0jQXiQBJWw6YMvpOsurGZrZ28n8u%252FdhkZMDA996uk593y3ExR11fBZ60q9gfcW0HmfdaWRDxcJaa3mRqBCrkUNyJ3k6exhxVkQ8sYaZ6SpiDdDBOuU0XOjsa3BpmA%252FlITnzSohpXMNckpNA1q4EjT62ASl2pcHZSEwdk9F01RKit4BaV6%252F0bRUeW4qcGWAaGgfyej6Kc2It%252BhmVHrQ%252FnpXZq908JsQaHC0r0AZ7Q22VFIjdlAQb7lIyDYPWQ6hkDe3RTwW3dmNIpBRLKOiGI%252FiuJMhtrDU6IR2CWEhi%252F0o8tl1xq44Y5yNXom3%252FgZwp3Sh9P4yrfwkQn6fZWv%252F1OUFLA49OgGZTvqB%252BRBsz7Zw2Vb8oCfT%252F0F3OANpagraKXfs6U7oWdApteGPnfNysTbdHo7erKrMYW5BOEhIROj09OTvR5l%252BAQ%253D%253D%26RelayState%3Dhttps%253A%252F%252Fopenathens-sp.highwire.org%252Fapplications%252Fbmj&ctx=dsc&redirect=true",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					25
+				]
+			]
+		}
+	},
+	{
+		"id": "begum_etal24",
+		"type": "article-journal",
+		"abstract": "BACKGROUND: National lockdowns in England due to COVID-19 resulted in rapid shifts in healthcare provision, including in primary care where most contraceptive prescriptions are issued. This study aimed to investigate contraception prescribing trends in primary care during the pandemic and the impact of socioeconomic deprivation.\nMETHODS: Prescribing data were accessed from the English Prescribing Dataset for the first year of the COVID-19 pandemic (1 March 2020-28 February 2021) and the year prior (1 March 2019-29 February 2020). Data were analysed by geographical region (London, Midlands and East of England, North of England, South of England) and contraceptive type (progestogen-only pill (POP), combined oral contraception (COC), emergency hormonal contraception (EHC) and contraceptive injections). Differences in prescribing rates were calculated using Poisson regression. Pearson correlation coefficients were calculated for the Index of Multiple Deprivation (IMD) scores for each Clinical Commissioning Group (CCG) in the North East and North Cumbria (NENC).\nRESULTS: Contraception prescribing rates decreased overall during the COVID-19 pandemic in England (Poisson regression coefficient (β)=-0.035), with a statistically significant (p<0.01) decrease in all four regions. Prescriptions decreased for COC (β=-0.978), contraceptive injections (β=-0.161) and EHC (β=-0.2005), while POP (β=0.050) prescribing rates increased. There was a weak positive correlation between IMD and prescribing rates in NENC (p>0.05).\nCONCLUSIONS: Contraception provision was impacted by COVID-19 with an overall decrease in prescribing rates. The deprivation results suggest that this may not be a significant contributing factor to this decrease. Further research is recommended to better understand these changes, and to ensure that services respond appropriately to population needs.",
+		"container-title": "BMJ sexual & reproductive health",
+		"DOI": "10.1136/bmjsrh-2023-201856",
+		"ISSN": "2515-2009",
+		"issue": "2",
+		"journalAbbreviation": "BMJ Sex Reprod Health",
+		"language": "eng",
+		"note": "PMID: 37852734",
+		"page": "76-82",
+		"source": "PubMed",
+		"title": "Contraception prescribing in England during the COVID-19 pandemic",
+		"volume": "50",
+		"author": [
+			{
+				"family": "Begum",
+				"given": "Tanha"
+			},
+			{
+				"family": "Cullen",
+				"given": "Emer"
+			},
+			{
+				"family": "Moffat",
+				"given": "Malcolm"
+			},
+			{
+				"family": "Rankin",
+				"given": "Judith"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2024",
+					4,
+					11
+				]
+			]
+		}
+	},
+	{
+		"id": "Ulipristal20",
+		"type": "webpage",
+		"abstract": "Ulipristal acetate for uterine fibroids: EMA recommends restricting use On 12 November 2020, EMA’s human medicines committee (CHMP) recommended restricting use of medicines containing ulipristal acetate 5 mg (Esmya and generic medicines) as a result of cases of serious liver injury. The medicines can now only be used to treat uterine fibroids in premenopausal women for whom surgical procedures (including uterine fibroid embolisation) are not appropriate or have not worked. The medicines must not be used for controlling symptoms of uterine fibroids while awaiting surgical treatment. Information on the risk of liver failure (requiring liver transplantation in some cases) will be added to the summary of product characteristics and the package leaflets for ulipristal acetate 5 mg medicines as well as in educational material for doctors and cards for patients. EMA’s safety committee (PRAC) review of serious liver injury with ulipristal acetate 5 mg had found that it was not possible to identify either patients most at risk of liver injury or measures that could reduce the risk. The PRAC had therefore advised that these medicines should not be marketed in the EU. The CHMP endorsed the PRAC’s assessment of the risk of liver injury. However, it considered that the benefits of ulipristal acetate 5 mg in controlling fibroids may outweigh this risk in women who have no other treatment options. As a result, the CHMP recommended that the medicine remains available to treat premenopausal women who could not have surgery (or for whom surgery had not worked). Ulipristal acetate is also authorised as a single-dose medicine for emergency contraception (ellaOne and other trade names). No concern has been raised about liver injury with these single-dose emergency contraception medicines and this recommendation does not affect them. The CHMP’s recommendation was sent to the European Commission which has issued a legally binding decision. The use of 5-mg ulipristal acetate medicines for uterine fibroids had been suspended as a precaution while awaiting the outcome of this review. Information for patients Your doctor will prescribe ulipristal acetate 5 mg medicine for treating uterine fibroids (growths in the womb that are not cancerous) only if: you have not reached the menopause and you cannot have an operation for the condition or the operation has not worked. Serious liver injury has occurred in women taking ulipristal acetate 5 mg, which can lead to liver transplantation in a few cases. Your doctor will discuss with you whether your need for treatment outweighs this risk. You will have a blood test to check your liver before you take ulipristal acetate 5 mg, during your treatment and after your treatment stops. Read the card you have been given with your ulipristal acetate 5 mg medicine because it tells you what to do if you have any signs of liver injury. You must stop treatment with ulipristal acetate 5 mg and speak with your doctor immediately if you get any signs of liver injury such as yellowing of the skin, dark urine, feeling sick or vomiting. Speak to your doctor or pharmacist if you have any questions and concerns about your treatment. Information for healthcare professionals Ulipristal acetate 5 mg medicine must only be prescribed for treating uterine fibroids in premenopausal women who cannot have surgery or uterine fibroid embolisation, or the surgical procedure has failed. Use of ulipristal acetate 5 mg is restricted because of reports of serious liver injury, occasionally requiring liver transplantation. Before treatment with ulipristal acetate 5 mg: prescribers should discuss all available treatment options with women prescribers should counsel women on the risk of liver failure and subsequent need for liver transplantation. Although risk factors for liver injury with ulipristal acetate 5 mg or specific measures to reduce risk have not been identified, healthcare professionals should follow the summary of product characteristics (including contraindications and recommendations on liver function monitoring) as well as the physician’s guide to prescribing that is available for the medicine. Patients should be advised to monitor for signs and symptoms of liver damage.",
+		"language": "en",
+		"title": "Ulipristal acetate 5mg medicinal products - referral | European Medicines Agency (EMA)",
+		"URL": "https://www.ema.europa.eu/en/medicines/human/referrals/ulipristal-acetate-5mg-medicinal-products",
+		"accessed": {
+			"date-parts": [
+				[
+					"2024",
+					11,
+					25
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2020",
+					11,
+					13
 				]
 			]
 		}
