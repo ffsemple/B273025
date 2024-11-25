@@ -8,13 +8,12 @@ output:
   html_document: 
     code_download: true
     toc: true
-    number_sections: true
     theme: flatly
 
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE, fig.align = "center", fig.width = 8, fig.height = 5) # align figures to centre and set dimensions to prevent them being cut off 
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE, fig.align = "center", fig.width = 8, fig.height = 6) # align figures to centre and set dimensions to prevent them being cut off 
 ```
 
 # Introduction 
@@ -26,17 +25,13 @@ Currently in Scotland there are two types of emergency contraceptive pill (ECP) 
 >* **Levonorgestrel ** (brand name: *Levonelle*) - Effective within 72 hours (three days) of unprotected sex
 >* **Ulipristal Acetate ** (brand name: *ellaOne*) - Effective within 120 hours (five days) of unprotected sex  
 
-This analysis explores prescribing patterns of ECP using the Public Health Scotland Community Prescriptions Database from 2019 to 2022. Understanding the prescribing patterns of ECP is essential for identifying disparities in access and improving public health strategies. This report addresses the following research questions: 
+This analysis explores prescribing patterns of ECP using the Public Health Scotland Community Prescriptions Database from 2019 to 2022. Understanding the prescribing patterns of ECP is essential for identifying disparities in access and improving public health strategies. This report aims to identify factors influencing ECP prescribing in Scotland through answering: 
 
 > 1) What are the trends in prescribing of ECP between 2019 and 2022? 
-
 > 2) How does the ECP prescription rate vary across Health Board regions in Scotland?
-
 > 3) Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
-
 > 4) Is there geographical variation in prescribing practices of ECP by Health Board region?
 
-This report aims to identify possible factors influencing ECP prescribing in Scotland.
 
 ```{r}
 # load necessary libraries
@@ -170,13 +165,13 @@ ECP_trend_plot <- ECP_trend_plot_data %>%
   scale_size_identity() + # ensures ggplot uses the size values as outlined in geom_line()
   scale_y_continuous(limits = c(0, NA), breaks = scales::pretty_breaks(n = 5))+ # ensure y-axis starts at 0 and has evenly spaced breaks 
   labs(
-    title = "Trends in Emergency Contraception Prescribing 2019–2022 in Scotland.",
-    subtitle = "Four years of population adjusted prescribing rates highlighting the impact of Covid-19 (blue)",
+    title = "Trends in Emergency Contraception Prescribing 2019–2022 \n in Scotland.",
+    subtitle = "Four years of population adjusted prescribing rates\n  highlighting the impact of Covid-19 (blue)",
     x = "Month",
     y = "Prescriptions per 100,000 women") +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 20, hjust = 0.5, face = "bold"),
+    plot.title = element_text(size = 18, hjust = 0.5, face = "bold"),
     plot.subtitle = element_text(size = 14, hjust = 0.5),
     axis.title.x = element_text(size = 12),
     axis.title.y = element_text(size = 12),
@@ -311,7 +306,7 @@ ECP_SIMD_barchart <- toal_no_GP_per_SIMD %>%
   ggplot(aes(x = factor(simd2020v2hb_decile, levels = 1:10),y = prescriptions_gp,  fill = drug, text = paste("Decile:", simd2020v2hb_decile, "<br>Drug:", drug))) + # customise hover box for interactive chart
   geom_col() +
   scale_fill_manual(values = c("#4575b4", "#91bfdb"), name = "Drug Type") +  # add colour palette
-  labs(title = "Emergency Contraception Prescriptions by Scottish Index of Multiple \n Deprivation (SIMD) 2019 to 2022, normalised by number of GPs per SIMD decile.",
+  labs(title = "Emergency Contraception Prescriptions by \n Scottish Index of Multiple Deprivation (SIMD) 2019 to 2022, \n normalised by number of GPs per SIMD decile.",
     x = "SIMD Decile \n (1 = Most Deprived, 10 = Least Deprived)",
     y = "Prescriptions",
     fill = "Drug") +
@@ -373,14 +368,14 @@ map_variation_ECP_prescribed <- variation_ECP_prescribed %>%
   ggplot(aes(fill = levo_to_uli_ratio)) +
   geom_sf(size = 0.1, colour = "grey50", alpha =0.9) +
   scale_fill_distiller(palette = "Blues", direction = 1) +
-  labs(title = "Geographical variation in Emergency Contraceptive Pill \n prescribing in Scotland.", 
-       subtitle = "Heatmap showing Levonorgestrel prescriptions as a proportion of total Emergency \n Contraceptive Pill (ECP) prescriptions by Health Board region", 
+  labs(title = "Geographical variation in Emergency Contraceptive \n Pill prescribing in Scotland.", 
+       subtitle = "Heatmap showing Levonorgestrel prescriptions as a proportion of total \n Emergency Contraceptive Pill (ECP) prescriptions by Health Board region", 
        fill = "Levonorgestrel to ECP ratio", caption = "Data Source: Public Health Scotland Prescriptions in the Community, 2019-2022") +
   coord_sf() +
   theme_void() +
   theme(
-    plot.title = element_text(face = "bold", size = 22, hjust=0.5), 
-    plot.subtitle = element_text(size = 16, hjust=0.5), 
+    plot.title = element_text(face = "bold", size = 18, hjust=0.5), 
+    plot.subtitle = element_text(size = 14, hjust=0.5), 
     legend.title = element_text(size = 12),
     legend.text = element_text(size = 9, hjust=0.5),
     legend.direction = "vertical",
