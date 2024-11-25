@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE
 
 # Introduction 
 
-Preventing unintended pregnancy is important for both individual wellbeing and public health. Unprotected sex occurs for multiple, complex reasons including sexual assault, reproductive coercion, contraceptive mishaps, and lapses in contraceptive use. Emergency contraception is used to prevent pregnancy following unprotected sex or contraceptive failure. In Scotland emergency contraception can be obtained via a pill or intrauterine device. 
+Preventing unintended pregnancy is important for both individual well-being and public health. Unprotected sex occurs for multiple, complex reasons including sexual assault, reproductive coercion, contraceptive mishaps, and lapses in contraceptive use. Emergency contraception is used to prevent pregnancy following unprotected sex or contraceptive failure. In Scotland emergency contraception can be obtained via a pill or intrauterine device. 
 
 Currently in Scotland there are two types of emergency contraceptive pill (ECP) prescribed by pharmacies. These are:
 
@@ -28,13 +28,12 @@ Currently in Scotland there are two types of emergency contraceptive pill (ECP) 
 This analysis explores prescribing patterns of ECP using the Public Health Scotland Community Prescriptions Database from 2019 to 2022. Understanding the prescribing patterns of ECP is essential for identifying disparities in access and improving public health strategies. This report aims to identify factors influencing ECP prescribing in Scotland through answering: 
 
 > 1) What are the trends in prescribing of ECP between 2019 and 2022? 
-> 2) How does the ECP prescription rate vary across Health Board regions in Scotland?
+> 2) How does the ECP prescription rate vary by Health Board regions in Scotland?
 > 3) Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
 > 4) Is there geographical variation in prescribing practices of ECP by Health Board region?
 
-
+Load necessary libraries:
 ```{r}
-# load necessary libraries
 library(tidyverse)
 library(janitor) 
 library(gt) 
@@ -76,7 +75,7 @@ young_population_data <- all_population_data %>%
 
 ```
 
-Define a function to read in the prescription data for a defined year:
+**Define a function** to read in the prescription data for a defined year:
 ```{r}
 #For efficiency I created a function to read in the prescriptions datasets. I downloaded 12 months of prescription data for each year from 2019 to 2022. I placed the 12 months of data into their relevant folder named all_months_year, where year was specific to the data it contained.
 read_all_prescriptions <- function(year){
@@ -88,7 +87,7 @@ read_all_prescriptions <- function(year){
   return(all_prescriptions)}
 ```
 
-Read in datasets using read_all_prescriptions() function and start data wrangling:
+Read in datasets using **read_all_prescriptions()** function and start data wrangling:
 ```{r}
 # all_prescriptions_2019 <- read_all_prescriptions(2019)
 # all_prescriptions_2020 <- read_all_prescriptions(2020)
@@ -120,7 +119,7 @@ Read in datasets using read_all_prescriptions() function and start data wranglin
 combined_prescriptions <- read_csv(here("data","combined_prescriptions.csv"))
 ```
 
-Join and wrangle data:
+Join and wrangle data naming the output variable **ECP_scripts**:
 ```{r}
 # join the prescriptions dataset to the Health Board names and health board population datasets
 ECP_scripts <- combined_prescriptions %>% 
@@ -135,9 +134,7 @@ ECP_scripts <- combined_prescriptions %>%
 
 ## What are the trends in prescribing of ECP between 2019 and 2022? 
 
-This plot explores if there is monthly variation in prescribing rate of ECP for the years 2019 to 2022. I included 4 years of consecutive data to see if a one-time event, such as the Covid-19 pandemic or the Common Wealth Games caused any changes in emergency contraception prescribing rate.
-I wanted to see if there was seasonal trends in ECP prescriptions coinciding with events such as Valentines day, University start dates, or national holidays. 
-I used population-weighted prescribing rates to avoid bias.
+This plot explores if there is monthly variation in prescribing rate of ECP for the years 2019 to 2022. I included 4 years of consecutive data to see if a one-time event, such as the Covid-19 pandemic or the Common Wealth Games caused any changes in ECP prescribing rate. 
 
 Figure 1:
 ```{r}
@@ -186,7 +183,7 @@ ECP_trend_plot <- ECP_trend_plot_data %>%
 ECP_trend_plot
 ```
 
-Due to low prescribing rates of ECP there is stochastic variation on the graphical representation of the data. Interesting trends to note include:
+Due to low prescribing rates of ECP there is stochastic variation on graphical representation of the data. Interesting trends to note include:
 
 * Levonorgestrel is more commonly prescribed than Ulipristal Acetate, with levonorgestrel having a mean prescription rate of 150 presciptions of Levonorgestrel per 100,000 women each month compared to Ulipristal Acetate having 3 prescriptions per 100,000 women per month. 
 
@@ -198,9 +195,9 @@ Due to low prescribing rates of ECP there is stochastic variation on the graphic
 
 * Between February and May of 2020 the prescription rate of Levonorgestrel decreases. This is likely due to decreased sexual activity and risk taking behaviours due to the stringent national 'lockdown' measures introduced between X to Y in response to the Covid-19 pandemic. 
 
-## How does the ECP prescription rate vary across Health Board regions in Scotland? 
+## How does the ECP prescription rate vary by Health Board regions in Scotland? 
 
-This figure explores if there are differences in the average annual prescription rate for each Health Board in Scotland. To explore possible reasons for differences I calculated the proportion of young people in each Health Board to see if there was a trend. 
+This figure explores if there are differences in the average annual prescription rate for each Health Board in Scotland. Additionally I calculated the proportion of young people within each health board to see if there was an association. 
 
 Wrangle data to get the columns and values of interest: 
 ```{r}
@@ -264,14 +261,10 @@ When comparing the types of ECP prescribed generally levonorgestrel prescribed s
 
 ## Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
 
-This figure explores if 
-
-To measure deprivation I have used the Scottish Index of Multiple Deprivation. I took the SIMD 2020v2 dataset from Public Health Scotland website [available from: https://www.opendata.nhs.scot/gl/dataset/scottish-index-of-multiple-deprivation/resource/acade396-8430-4b34-895a-b3e757fa346e ] as this dataset contains SIMD decile weighted per Health Board population.
-
-When interpreting SIMD in deciles rank 1 is considered the most deprived, and rank 10 is least deprived. 
+This figure explores if quantity of prescriptions varies by SIMD. Corrected for SIMD having different number of GPs. 
 
 ```{r}
-# read in datasets: (link available in code)
+# To measure deprivation I have used the Scottish Index of Multiple Deprivation. 2020v2 dataset from Public Health Scotland. (link available in code)
 SIMD <- read_csv("https://www.opendata.nhs.scot/gl/dataset/78d41fa9-1a62-4f7b-9edb-3e8522a93378/resource/acade396-8430-4b34-895a-b3e757fa346e/download/simd2020v2_22062020.csv") %>%
   clean_names() %>%
   select(data_zone, simd2020v2hb_decile)
@@ -309,7 +302,7 @@ ECP_SIMD_barchart <- toal_no_GP_per_SIMD %>%
   scale_fill_manual(values = c("#4575b4", "#91bfdb"), name = "Drug Type") +  # add colour palette
   labs(title = "Emergency Contraception Prescriptions by \n Scottish Index of Multiple Deprivation (SIMD) 2019 to 2022, \n normalised by number of GPs per SIMD decile.",
     x = "SIMD Decile \n (1 = Most Deprived, 10 = Least Deprived)",
-    y = "Prescriptions",
+    y = "Prescriptions per GP",
     fill = "Drug") +
   theme_minimal(base_size = 12) +
   theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
@@ -326,16 +319,17 @@ ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart, tooltip = "text") # make plot i
 ECP_SIMD_barchart
 ```
 
-## Is there geographical variation in prescribing practices of ECP by Health Board region?
+Generally as SIMD decile increases the number of prescriptions of ECP by GP decreases. GPs in SIMD1, the most deprived areas, prescribe the most ECP whilst increasing affluence is related to decreasing number of ECP prescribed. This suggests those in deprived areas are utilising ECP more, highlighting an inequality in health need. Perhaps this disparity is due to education, safe practises, environmental factors.
 
-I wanted to explore if there was any correlation between the type of contraception being prescribed and deprivation. To do this I made a ratio of levonorgestrel  to total emergency contraception prescriptions. 
+## Is there geographical variation in the prescribing practices of ECP by Health Board region?
+
+I wanted to explore if there was any correlation between the type of contraception being prescribed and the location of the pharmacy. To do this I calculated the ratio of total levonorgestrel prescriptions to total emergency contraception prescriptions for each Health Board Region.
 
 $$
 \frac{Levonorgestrel}{Levonorgestrel + Ulipristal Acetate}
 $$
 
-
-This is important to identify any variation in prescribing patterns in more deprived areas. Differences may suggest patients access health services later, so have to use Ulipristal Acetate, or that GPs or Pharmacists have differences in prescribing preferences in more deprived areas.
+A score close to one suggest the majority of prescriptions in this region are Levonorgestrel, whilst a score closer to zero indicates the majority of prescriptions are Ulipristal Acetate. This is a useful way of identifying variation in prescribing practices. 
 
 Figure 3:
 ```{r}
@@ -385,8 +379,9 @@ map_variation_ECP_prescribed <- variation_ECP_prescribed %>%
 map_variation_ECP_prescribed
 ```
 
-# Conclusion 
+Differences may suggest patients access health services later, so have to use Ulipristal Acetate, or that GPs or Pharmacists have differences in prescribing preferences in more deprived areas.
 
+# Conclusion 
 prescribing choices are determined by geography, deprivation, age 
 
 ## Recommendations from analysis 
