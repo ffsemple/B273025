@@ -16,36 +16,28 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE)
 ```
 
-# make this a question! How do Emergency Contraceptive Pill Prescribing Patterns very in Scotland?
-
-Mark scheme:
-Justified – understanding of the data and their context  
-Introduction  
-Key results   
-Conclusion 
-References (for reason chosen research question)  
-Narrative shows critical thinking  
-Multiple data sources   
-Recommendations and conclusions are grounded in the data  
-Limitations of the data set discussed. Next steps suggested in terms of data that would allow for further analysis.   
+# Exploratory analaysis of the potential factors affecting emergency contraceptive prescribing patterns in Scotland
 
 ## Introduction 
 
-There are two types of emergency contraceptive pill prescribed by pharmacies.
+Preventing unintended pregnancy is important for both individual wellbeing and public health. Unprotected sex occurs for multiple, complex reasons including sexual assault, reproductive coercion, contraceptive mishaps, and lapses in contraceptive use. Emergency contraception is used to prevent pregnancy following unprotected sex or contraceptive failure. In Scotland emergency contraception can be obtained via a pill or intrauterine device. 
 
->* **Levonogestrel** (brand name: *Levonelle*) taken within three days of unprotected sex
->* **Ulipristal Acetate** (brand name: *ellaOne*) taken within five days of unprotected sex  
+Currently in Scotland there are two types of emergency contraceptive pill (ECP) prescribed by pharmacies. These are:
 
+>* **Levonorgestrel ** (brand name: *Levonelle*) - Effective within 72 hours (three days) of unprotected sex
+>* **Ulipristal Acetate ** (brand name: *ellaOne*) - Effective within 120 hours (five days) of unprotected sex  
 
-This report explores 
+This analysis explores prescribing patterns of ECP using the Public Health Scotland Community Prescriptions Database from 2019 to 2022. Understanding the prescribing patterns of ECP is essential for identifying disparities in access and improving public health strategies. This report addresses the following research questions: 
 
-1) Prescribing patterns of emergency contraceptive pill (ECP) between 2019 to 2023. 
+1) What are the trends in prescribing of ECP between 2019 and 2022? 
 
-2) How ECP and antibiotics for STI prescriptions differ in geography comparing university town to a non-university town 
+2) How does the ECP prescription rate vary across Health Board regions in Scotland?
 
-3) Compare patterns in ECP and STI antibiotics prescribing during Covid-19 lockdowns - did the need for ECP or incidence of STI antibiotics prescription go down during lockdowns?
+3) Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
 
-4) How does SIMD relate to prescription of ECP / antibiotics for STIs 
+4) Is there geographical variation in prescribing practices of ECP by Health Board region?
+
+This report aims to identify possible factors influencing ECP prescribing in Scotland.
 
 ```{r}
 # load necessary libraries
@@ -59,24 +51,11 @@ library(ggspatial)
 library(plotly)
 ```
 
-I have chosen to look at all prescriptions from 2019 and 2022. To do this I downloaded the prescriptions data for each month from: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community  
-
-I wanted to explore how many ECP and antibiotics for STIs were prescibed during across 2023.
-
-
->4 plots and / or tables 
-No use of settings other than default 
-Labelled, titled plots 
-Labelled titled tables 
-Appropriate and thoughtful data visualisation with some use of non-default settings (gt)
-Faceting, multilayered plots, interactive visualisation 
-
-Read in data:
+Read in datasets:
 ```{r}
-# Read in the Health Board names (HB_names). See code for link
+# Read in the Health Board names (HB_names). See code for link.
 HB_names <- read_csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/652ff726-e676-4a20-abda-435b98dd7bdc/download/hb14_hb19.csv") %>% 
-  clean_names() # ensures column names are unique, lower case and replaces spaces and special characters with underscores. I will use this function for all read ins to ensure my data is consistent and easy to manipulate.
-
+  clean_names() # ensures column names are unique, lower case and spaces and special characters are replaced with underscores. I will use this function for all read ins to ensure my data is consistent and easy to manipulate.
 
 # Read in population data per Health Board from the 2022 census data. Available from: https://statistics.ukdataservice.ac.uk/dataset/scotland-s-census-2022-uv102a-age-by-sex/resource/b2d295c2-af53-4b3d-a075-7815cadd9060 
 all_population_data <- read_csv(here("data", "UV103_age_health_board_census.csv"), skip = 10) %>% # locates the csv and excludes the first 10 lines in the csv as they are redundant
@@ -88,13 +67,13 @@ all_population_data <- read_csv(here("data", "UV103_age_health_board_census.csv"
   mutate(hb_name = paste("NHS", hb_name)) %>%  # change hb_name column format to match the Health Board dataframe format
   clean_names()
 
-# create dataset with total population for each health board
+# filter dataset for the total female population for each health board:
 population_data <- all_population_data %>% 
   filter(age == "All people") %>% 
   select(hb_name, hb_population)
 
 # select the population aged 16 to 34 years as this is the population the population most likely engaging with risk taking behaviors such as unprotected sex. I chose 16 as this is the age of consent in Scotland, and 34 as my cut off for young adults. 
-age_population_data <- all_population_data %>% 
+young_population_data <- all_population_data %>% 
   filter(age%in% c(16:34)) %>% # filter ages of interest
   mutate(age = as.numeric(age)) %>% # make numerical so they can be placed in to buckets
   mutate(age_group = case_when(between(age, 16,34)~'16-34')) %>% # make bucket 16-34 years
@@ -103,22 +82,19 @@ age_population_data <- all_population_data %>%
 
 ```
 
-
 Define a function to read in the prescription data for a defined year:
 ```{r}
-# #For efficiency I created a function to read in my prescriptions datasets.
-# #I downloaded 12 months of prescription data for each year from 2019 to 2022. I placed the 12 months of data into their relevant folder named all_months_year, where year was specific to the data it contained.
-# read_all_prescriptions <- function(year){
-#   all_files <- list.files(here("data", paste0("all_months_", year)), pattern = "csv") #list.files() retrieves files from the relevant directory, and the paste0() dynamically constructs the folder name based on the year variable placed into the function.
-#   all_prescriptions <- all_files %>%
-#     map_dfr(~read_csv(here("data", paste0("all_months_", year),.))) %>% #map_dfr() row-binds the datasets being red in
-#     clean_names() %>%
-#     drop_na(bnf_item_description) # drop the rows with missing bnf_item values
-#   return(all_prescriptions)
-# }
+#For efficiency I created a function to read in the prescriptions datasets. I downloaded 12 months of prescription data for each year from 2019 to 2022. I placed the 12 months of data into their relevant folder named all_months_year, where year was specific to the data it contained.
+read_all_prescriptions <- function(year){
+  all_files <- list.files(here("data", paste0("all_months_", year)), pattern = "csv") #list.files() retrieves files from the relevant directory, and the paste0() dynamically constructs the folder name based on the year variable placed into the function.
+  all_prescriptions <- all_files %>%
+    map_dfr(~read_csv(here("data", paste0("all_months_", year),.))) %>% #map_dfr() row-binds the datasets being read in
+    clean_names() %>%
+    drop_na(bnf_item_description) # drop the rows with missing bnf_item values
+  return(all_prescriptions)}
 ```
 
-Read in datasets using read_all_prescriptions() function and start tidying:
+Read in datasets using read_all_prescriptions() function and start data wrangling:
 ```{r}
 # all_prescriptions_2019 <- read_all_prescriptions(2019)
 # all_prescriptions_2020 <- read_all_prescriptions(2020)
@@ -134,57 +110,42 @@ Read in datasets using read_all_prescriptions() function and start tidying:
 #   all_prescriptions_2019,
 #   all_prescriptions_2020,
 #   all_prescriptions_2021,
-#   all_prescriptions_2022 )%>% # I mutate early and select the prescriptions of interest to prevent a very large dataset from being stored in my environment (prevents R slowing down and crashing)
+#   all_prescriptions_2022 )%>% # I mutate and select the prescriptions of interest to prevent a very large dataset from being stored in my environment (prevents R slowing down and crashing)
 #   mutate(
 #     date = parse_date_time(paid_date_month, "ym"), # use lubridate to format date
 #     drug_simple = case_when(
 #       str_detect(bnf_item_description, "LEVONO") ~ "Levonorgestrel",
 #       str_detect(bnf_item_description, "ULIPR") ~ "Ulipristal Acetate",
-#       TRUE ~ "Other")) %>% # used case_when() to group different dosages of the same drug
+#       TRUE ~ "Other")) %>% # used case_when() to select ECP even when they have different dosages
 #   filter(drug_simple != "Other",!is.na(date)) %>% #remove prescriptions of no interest and any missing date values
 #   filter(hbt != "SB0806") %>% # filter out SB0806 as it is not a health board (Scottish Ambulance Service)
 #   filter(!is.na(hbt))
 
-# # save combined_prescriptions dataset to csv
-# # write_csv(combined_prescriptions,"data/combined_prescriptions.csv")
-
-# filter drugs of intereset before completing read in to prevent loading large datasets into the environment (prevents R from running slow and crashing)
-combined_prescriptions <- read_csv(here("data","combined_prescriptions.csv")) %>%
-  mutate(
-    date = parse_date_time(paid_date_month, "ym"), # use lubridate to format date
-    drug_simple = case_when(
-      str_detect(bnf_item_description, "LEVONO") ~ "Levonorgestrel",
-      str_detect(bnf_item_description, "ULIPR") ~ "Ulipristal Acetate",
-      TRUE ~ "Other")) %>% # used case_when() to group different dosages of the same drug
-  filter(drug_simple != "Other",!is.na(date))%>%  # remove other prescriptions from the dataset and any missing date values
-  filter(hbt != "SB0806") %>% # filter out SB0806 as it is not a health board (Scottish Ambulance Service)
-  filter(!is.na(hbt))
-
+# save combined_prescriptions dataset to a csv in my directory, to prevent many large datasets being stored in my environment and slowing down R. 
+# write_csv(combined_prescriptions,"data/combined_prescriptions.csv")
+combined_prescriptions <- read_csv(here("data","combined_prescriptions.csv"))
 ```
 
 Join and wrangle data:
 ```{r}
-# join the Prescriptions dataset to the Health Board names dataset and health board population data
+# join the prescriptions dataset to the Health Board names and health board population datasets
 ECP_scripts <- combined_prescriptions %>% 
-  full_join(HB_names, by = c("hbt" = "hb")) %>% # Join with Health Board names
-  full_join(population_data, by = "hb_name") %>% # Join with population data
+  full_join(HB_names, by = c("hbt" = "hb")) %>% # join with Health Board names
+  full_join(population_data, by = "hb_name") %>% # join with population data
   select(gp_practice, date, drug = drug_simple, hb_name, paid_quantity,hb_population) %>%  # select columns of interest
-  mutate(month = factor(month(date), levels = 1:12, labels = month.abb), .after = date) %>%   # extract month as a factor with labels to help when plotting
-  mutate(year = factor(year(date)), .after = month) 
-
+  mutate(month = factor(month(date), levels = 1:12, labels = month.abb), .after = date) %>%   
+  mutate(year = factor(year(date)), .after = month) # extract month and year as a factor with labels to help when plotting
 ```
 
 ## Key Results 
 
-### What are the seasonal trends in prescribing of Emergency Contracpetion Pills in the years 2019 to 2022? 
+### What are the trends in prescribing of ECP between 2019 and 2022? 
 
-This graph explores seasonal trends in prescribing of the two most commonly prescribed emergency contraceptive pills, Levonogestrel and Ulipristal Acetate, between 2019 to 2022 by Health Board. I plotted this to see if events such as Valentines day, University term start dates, or national holidays effect emergency contraceptive prescribing rates. I included 4 years of consecutive data to see if a one-time event, such as the Common Wealth Games caused any spikes in emergency contraception prescribing. Additionally by plotting the 4 consecutive years we can see if Covid-19 lockdowns in the years 2020 and 2021 affected emergency contraception prescribing rates.
+This plot explores if there is monthly variation in prescribing rate of ECP for the years 2019 to 2022. I included 4 years of consecutive data to see if a one-time event, such as the Covid-19 pandemic or the Common Wealth Games caused any changes in emergency contraception prescribing rate.
+I wanted to see if there was seasonal trends in ECP prescriptions coinciding with events such as Valentines day, University start dates, or national holidays. 
+I used population-weighted prescribing rates to avoid bias.
 
-Plot:
-Population-Weighted Rates: Ensures that national trends are calculated based on the total population across all health boards, avoiding bias from smaller regions.
-Accurate National-Level Insights: Better reflects overall prescribing behaviour at the national level, aligning with your goal to analyse seasonal and national events.
-prescribing rates are weighted by the total population, providing an accurate reflection of overall prescribing behaviour across Scotland.
-
+Figure 1:
 ```{r}
 total_population <- sum(population_data$hb_population, na.rm=TRUE) # calculate total population of Scotland
 
@@ -206,52 +167,52 @@ ECP_trend_plot <- ECP_trend_plot_data %>%
   geom_line(aes(size = ifelse(year == "2020", 0.9, 0.7))) + # make the 2020 line slightly thicker to make it stand out 
   facet_wrap(~drug, scales = "free_y") + # separate the two types of ECP
   scale_linetype_manual(values = c("2019" = "dotdash", "2020" = "solid", "2021" = "dashed", "2022" = "dotted"),name = "Year") + # make each year identifiable by linte type
-  scale_color_manual(values = c("2019" = "grey70", "2020" = "red", "2021" = "grey70", "2022" = "grey70"),name = "Year") + # make Covid-19 year red (2020 had the longest lockdown, March till May)
-  scale_size_identity() + # Ensures ggplot uses the size values as outlined in geom_line()
-  scale_y_continuous(limits = c(0, NA), breaks = scales::pretty_breaks(n = 5))+ # Ensure y-axis starts at 0 and has evenly spaced breaks 
+  scale_color_manual(values = c("2019" = "grey70", "2020" = "#4575b4", "2021" = "grey70", "2022" = "grey70"),name = "Year") + # make Covid-19 year blue (2020 had the longest lockdown, March till May)
+  scale_size_identity() + # ensures ggplot uses the size values as outlined in geom_line()
+  scale_y_continuous(limits = c(0, NA), breaks = scales::pretty_breaks(n = 5))+ # ensure y-axis starts at 0 and has evenly spaced breaks 
   labs(
     title = "Trends in Emergency Contraception Prescribing 2019–2022 in Scotland.",
-    subtitle = "Four years of population adjusted prescribing rates highlighting the impact of Covid-19 (red)",
+    subtitle = "Four years of population adjusted prescribing rates highlighting the impact of Covid-19 (blue)",
     x = "Month",
     y = "Prescriptions per 100,000 women") +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 22, hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(size = 16, hjust = 0.5),
+    plot.title = element_text(size = 20, hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
     axis.title.x = element_text(size = 12),
     axis.title.y = element_text(size = 12),
     axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
     axis.text.y = element_text(size = 9),
-    strip.text = element_text(size = 16),
+    strip.text = element_text(size = 12),
     legend.title = element_text(size = 12),
-    legend.text = element_text(size = 16),
+    legend.text = element_text(size = 12),
     legend.position = "bottom")
 
 ECP_trend_plot
 ```
 
+Due to low prescribing rates of ECP there is stochastic variation on the graphical representation of the data. Interesting trends to note include:
 
-investigate what happened in 2019 - change in prescription practises over time ? 
-did they used to use it for something else? 
+* Levonorgestrel is more commonly prescribed than Ulipristal Acetate, with levonorgestrel having a mean prescription rate of 150 presciptions of Levonorgestrel per 100,000 women each month compared to Ulipristal Acetate having 3 prescriptions per 100,000 women per month. 
 
-Trends to note:
+* Prescribing rate of Levonorgestrel has decreased each year between 2019 to 2022. 
 
-* Levonorgestrel is more commonly prescribed than Ulipristal Acetate. 
-* 2019 and 2022 represent years without Covid-19 lockdown measures. 2019 and 2022 have a peak in prescriptions of Levonorgestrel in October and August respectively. This perhaps reflects increased sexual activity coupled with the return to university with 'fresher' week. 
-* Between Febuary and May of 2020 the prescription rate of Levonorgestrel decreases. This is likely due to decreased sexual activity and risk taking behaviours due to the stringent national 'lockdown' measures introduced between X to Y in response to the Covid-19 pandemic. 
-* At the start of 2021 prescription rate of Levonorgestrel is very low. Likely due to additional Covid-19 lockdowns.
+* There is a large decrease in the prescription rate of Ulipristal Acetate in 2019 and all consecutive years. This likely reflects the change in prescription guidance in 2020, where the European Medicines Agency recommended withdrawing Ulipristal Acetate as a treatment for uterine fibroids due to safety concerns. Scotland adopted this guidance, and the sharp decrease is due to pharmacies no longer dispensing Ulipristal acetate as a treatment for uterine fibroids. The only prescriptions of Ulipristal Acetate from 2020 onwards is for ECP.  
 
-It would be interesting to explore if different Health Boards prescribe different amounts of ECP. 
+* There are peaks in the Summer months suggesting there may be a 'Summer of Love'.
 
-### Which Health Board is prescribing the most ECP? 
-to see if there is a trend between rate of prescribing of ECP and proportion of young people living in the HB
+* Between February and May of 2020 the prescription rate of Levonorgestrel decreases. This is likely due to decreased sexual activity and risk taking behaviours due to the stringent national 'lockdown' measures introduced between X to Y in response to the Covid-19 pandemic. 
 
+### How does the ECP prescription rate vary across Health Board regions in Scotland? 
+
+This figure explores if there are differences in the average annual prescription rate for each Health Board in Scotland. To explore possible reasons for differences I calculated the proportion of young people in each Health Board to see if there was a trend. 
+
+Wrangle data to get the columns and values of interest: 
 ```{r}
-# tidy data to make table with columns and values of interest 
 ECP_anual_rate_data <- ECP_scripts %>% 
-  group_by(hb_name, drug) %>%  # aggregate data by Health Board and drug
-  summarise(total_quantity_4_years = sum(paid_quantity, na.rm = TRUE),  # Total prescriptions over 4 years
-    avg_annual_total_quantity = total_quantity_4_years / 4,  # average annual prescriptions
+  group_by(hb_name, drug) %>% # aggregate data by Health Board and drug
+  summarise(total_quantity_4_years = sum(paid_quantity, na.rm = TRUE), # total prescriptions over 4 years
+    avg_annual_total_quantity = total_quantity_4_years / 4, # average annual prescriptions
     hb_population = first(hb_population), # hb_population is consistent within each hb_name
     .groups = "drop") %>% # ungroup data
   drop_na(drug) %>% # remove rows with no drug values
@@ -266,13 +227,16 @@ ECP_anual_rate_data <- ECP_anual_rate_data %>%
   arrange(desc(total_ECP_rate)) # arrange by total rate in descending order
 
 #calculate percentage young people per health board 
-ECP_anual_rate_data_buckets <- ECP_anual_rate_data %>% 
-  full_join(age_population_data) %>% # to get the population of those aged 16-34 years 
+ECP_anual_rate_data_young <- ECP_anual_rate_data %>% 
+  full_join(young_population_data) %>% # to get the population of those aged 16-34 years 
   group_by(hb_name) %>% 
   mutate(prop_young_ppl_hb = pop_hb_16_34/hb_population) %>% # calculate proportion of young people in each health board 
   ungroup()
+```
 
-annual_avg_ECP_table <- ECP_anual_rate_data_buckets %>% 
+Table 1:
+```{r}
+annual_avg_ECP_table <- ECP_anual_rate_data_young %>% 
   select(hb_name, levonorgestrel_rate, ulipristal_acetate_rate, total_ECP_rate,prop_young_ppl_hb) %>% # Select relevant columns
   gt() %>% 
   cols_label(hb_name = "Health Board",
@@ -281,115 +245,105 @@ annual_avg_ECP_table <- ECP_anual_rate_data_buckets %>%
              ulipristal_acetate_rate=" Ulipristal Acetate",
              prop_young_ppl_hb = "% Aged 16-34 Years") %>% # rename columns to make reader-friendly
   fmt_number(columns = c(levonorgestrel_rate, ulipristal_acetate_rate, total_ECP_rate, prop_young_ppl_hb), decimals = 0) %>% # no decimal points as false accuracy detracts from the message in the data
-  cols_align(align = "center",
-             columns = c(levonorgestrel_rate,ulipristal_acetate_rate,total_ECP_rate, prop_young_ppl_hb)) %>%  # centre column names
-  grand_summary_rows(columns = c(levonorgestrel_rate,ulipristal_acetate_rate, total_ECP_rate),
-                     fns = list("Overall Average" = ~mean(., na.rm = TRUE)),
-                     fmt = list(~ fmt_number(., decimals = 0))) %>%   # add an overall average of the prescription rate columns
+  cols_align(align = "center", columns = c(levonorgestrel_rate,ulipristal_acetate_rate,total_ECP_rate, prop_young_ppl_hb)) %>%  # centre column names
+  grand_summary_rows(columns = c(levonorgestrel_rate,ulipristal_acetate_rate, total_ECP_rate), fns = list("Overall Average" = ~mean(., na.rm = TRUE)), fmt = list(~ fmt_number(., decimals = 0))) %>% # add an overall average for the rate columns
   fmt_percent(columns = prop_young_ppl_hb, decimals = 0) %>%  # add percentage sign
   tab_header(title = md("**Average Annual Rate of Emergency Contraception Prescriptions by Health Board in Scotland.**"),
              subtitle = md("Rate per 100,000 women, derived from the mean prescription rates across the years 2019 to 2022. Health Boards are ranked in descending order.")) %>% # add a title and subtitle; md() allows text formatting from mark down 
-  tab_spanner(label = md("*Prescription rate per 100,000 women*"),
-    columns = c(levonorgestrel_rate,ulipristal_acetate_rate, total_ECP_rate)) %>%   # add a title to prescription rate columns.
+  tab_spanner(label = md("*Prescription rate per 100,000 women*"), columns = c(levonorgestrel_rate,ulipristal_acetate_rate, total_ECP_rate)) %>% # add a title to the rate columns.
   tab_source_note(md("*Data from Public Health Scotland. Available from: (https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community)*")) %>% 
   tab_stubhead(md("**2019-2022**")) %>% 
-  tab_footnote(footnote = "includes Capital City, Edinburgh",
-    locations = cells_body(columns = hb_name, rows = 2))%>% 
-  opt_stylize(style = 6, color = "cyan")
+  tab_footnote(footnote = "includes Capital City, Edinburgh", locations = cells_body(columns = hb_name, rows = 2))%>% 
+  opt_stylize(style = 6, color = "blue")
 
 annual_avg_ECP_table
 ```
 
-western isles relatively high uli prescription commpared to levo - explore if prescribing practices vary by location?
+Generally the health boards with the highest annual ECP prescription rate also had the highest proportion of young people living in their health board region. This suggests that young people are more likely using the ECP pharmacy service. Notably the top two Health Boards for prescribing ECP contain major Scottish cities, Glasgow and Edinburgh.
 
-### How does deprivation on the type of emergency contraceptive prescribed
+NHS Ayrshire and Arran is an outlier to this trend having the third highest ECP prescription rate, and yet a relatively smaller proportion of young people living in this health board (19%). This needs further exploration, perhaps indicating that under 16s or over 35s are using the ECP services more in this region. 
 
-How does deprivation influence type of contraception prescribed?
-I wanted to explore if there was any correlation between the type of contraception being prescribed and deprivation. To do this I made a ratio of levonogestrel to total emergency contraception prescriptions. 
+More remote Health Boards such as NHS Highland and NHS borders had the lowest rate of ECP prescribing. They also had a smaller proportion of young people living in their health board. 
 
-> A/(A+B)
-> Where A = Levonogestrel (prescribed within 3 days of unprotected sex)
-> B = Ulipristal Acetate (prescribed within 5 days of unprotected sex)
+When comparing the types of ECP prescribed generally levonorgestrel prescribed significantly more than Ulipristal Acetate. However this is not the case in the NHS Western Isles Health Board, where a similar proportion of Levonorgestrel is prescribed to Ulipristal Acetate. This trend is explored more in figure 4 to see whether there is geographical variation in the type of ECP prescribed.
 
-This is important to identify any variation in prescribing patterns in more deprived areas. Differences may suggest patients access health services later, so have to use Ulipristal Acetate, or that GPs or Pharmacists have differences in prescribing preferences in more deprived areas.
+### Are pharmacies in more deprived areas prescribing more ECP than those in affluent areas?
+
+This figure explores if 
+
 
 To measure deprivation I have used the Scottish Index of Multiple Deprivation. I took the SIMD 2020v2 dataset from Public Health Scotland website [available from: https://www.opendata.nhs.scot/gl/dataset/scottish-index-of-multiple-deprivation/resource/acade396-8430-4b34-895a-b3e757fa346e ] as this dataset contains SIMD decile weighted per Health Board population.
 
 When interpreting SIMD in deciles rank 1 is considered the most deprived, and rank 10 is least deprived. 
 
 ```{r}
-# read in datasets:
-
+# read in datasets: (link available in code)
 SIMD <- read_csv("https://www.opendata.nhs.scot/gl/dataset/78d41fa9-1a62-4f7b-9edb-3e8522a93378/resource/acade396-8430-4b34-895a-b3e757fa346e/download/simd2020v2_22062020.csv") %>%
   clean_names() %>%
   select(data_zone, simd2020v2hb_decile)
 
-# I chose to use GP Practices and List sizes from October 2022, as this was the closest dataset I could find which correlated with the final year of my prescriptions datset
+# I chose to use GP Practices and List Sizes from October 2022, as this was the closest dataset I could find which correlated with the final year of my prescriptions dataset:
 gp_addresses <- read_csv("https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/1a15cb34-fcf9-4d3f-ad63-1ba3e675fbe2/download/practice_contactdetails_oct2022-open-data.csv") %>%
   clean_names() %>%
   select(practice_code, gp_practice_name, data_zone)
 
 # Create ECP_GP by using the GP_addresses dataset to map the GP practice code to a datazone. I then used the column datazone to full_join() the SIMD dataset to the prescriptions dataset.
-
 ECP_GP <- ECP_scripts %>%
   filter(!gp_practice %in% c(99996, 99997, 99998)) %>% # remove dummy GP practice codes as they do not have a known gp practice code so cannot be mapped to a SIMD.
   left_join(gp_addresses, by = c("gp_practice" = "practice_code")) %>%
   #left_join(data_zones, by = "data_zone") %>%
   left_join(SIMD, by = "data_zone") %>%
-  drop_na(simd2020v2hb_decile) %>% # need SIMD value to make barchart
+  drop_na(simd2020v2hb_decile) %>% # need SIMD value to for plot
   group_by(gp_practice) %>% 
   mutate(total_quantity_per_gp = sum(paid_quantity)) %>% 
   clean_names()
 
-# calculate the number of GPs per health board 
-toal_no_GP_per_hb <- ECP_GP %>% 
-  filter(!gp_practice %in% c(99996, 99997, 99998)) %>% # remove dummy GP practice codes as they do not have a known gp practice code so cannot be mapped to a SIMD.
-  group_by(hb_name) %>%
-  summarise(unique_gp_count_per_hb = n_distinct(gp_practice))
+# calculate the number of GPs per SIMD (account for each SIMD having a different number of GPs) 
+toal_no_GP_per_SIMD <- ECP_GP %>% 
+  group_by(simd2020v2hb_decile) %>%
+  mutate(unique_gp_count_per_SIMD = n_distinct(gp_practice))
+```
 
-# calculate average population per GP in a health board 
-pop_per_gp_hb <- population_data %>% 
-  full_join(toal_no_GP_per_hb) %>% 
-  mutate(avg_pop_per_GP = hb_population /unique_gp_count_per_hb)
-
-# join pop_per_gp_hb to ECP_GP 
-ECP_pop_per_gp_hb <- ECP_GP %>% 
-  left_join(pop_per_gp_hb)
-
-# make bar chart
-ECP_SIMD_barchart <- ECP_pop_per_gp_hb %>%
-  group_by(simd2020v2hb_decile, drug) %>%
-  summarise(
-    prescriptions_hb_gp = (total_quantity_per_gp *10000 / avg_pop_per_GP), # summarise the prescriptions per 100,000
-    .groups = "drop"  # Ungroup data after summarisation
-  ) %>%
-  ggplot(aes(x = prescriptions_hb_gp, y = factor(simd2020v2hb_decile, levels = 1:10), fill = drug)) +
+Figure 2:
+```{r}
+ECP_SIMD_barchart <- toal_no_GP_per_SIMD %>%
+  group_by(simd2020v2hb_decile, drug) %>% 
+  summarise(prescriptions_gp = (total_quantity_per_gp / unique_gp_count_per_SIMD), # calculate the prescriptions per GP for each SIMD decile and drug
+    .groups = "drop") %>%  # Ungroup data after summarisation
+  ggplot(aes(x = factor(simd2020v2hb_decile, levels = 1:10),y = prescriptions_gp,  fill = drug, text = paste("Decile:", simd2020v2hb_decile, "<br>Drug:", drug))) + # customise hover box for interactive chart
   geom_col() +
-  scale_fill_brewer(palette = "Set2", name = "Drug Type") +  # add colour palette
-  labs(
-    title = "Barchart to show how the prescription rate of \n Emergency Contraceptive Pill varies by Scottish Index of Multiple Deprivation",
-    subtitle = "This chart shows the average prescription rate of ECP per SIMD, \n accounting for differences in number of GPs in each SIMD.",
-    x = "Prescriptions per 10,000 women",
-    y = "SIMD Decile \n (1 = Most Deprived, 10 = Least Deprived)",
+  scale_fill_manual(values = c("#4575b4", "#91bfdb"), name = "Drug Type") +  # add colour palette
+  labs(title = "Emergency Contraception Prescriptions by Scottish Index of Multiple \n Deprivation (SIMD) 2019 to 2022, normalised by number of GPs per SIMD decile.",
+    x = "SIMD Decile \n (1 = Most Deprived, 10 = Least Deprived)",
+    y = "Prescriptions",
     fill = "Drug") +
   theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
     plot.subtitle = element_text(size = 12, hjust = 0.5),
     axis.title.x = element_text(size = 12),
     axis.title.y = element_text(size = 12),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1),
+    axis.text.x = element_text(size = 10, hjust = 1),
     axis.text.y = element_text(size = 10),
     legend.position = "right",
     legend.title = element_text(size = 12, face = "bold"),
     legend.text = element_text(size = 10))
 
-ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart)
+ECP_SIMD_barchart <- ggplotly(ECP_SIMD_barchart, tooltip = "text") # make plot interactive
 ECP_SIMD_barchart
 ```
 
-Prescribing choices vary per regions 
+### Is there geographical variation in prescribing practices of ECP by Health Board region?
 
+I wanted to explore if there was any correlation between the type of contraception being prescribed and deprivation. To do this I made a ratio of levonorgestrel  to total emergency contraception prescriptions. 
+
+$$
+\frac{Levonorgestrel}{Levonorgestrel + Ulipristal Acetate}
+$$
+
+
+This is important to identify any variation in prescribing patterns in more deprived areas. Differences may suggest patients access health services later, so have to use Ulipristal Acetate, or that GPs or Pharmacists have differences in prescribing preferences in more deprived areas.
+
+Figure 3:
 ```{r}
 # load the NHS Health board Shapefile downloaded from learn page
 NHS_healthboards <- st_read(here("data", "NHS_healthboards_2019.shp")) %>% 
@@ -437,58 +391,15 @@ map_variation_ECP_prescribed <- variation_ECP_prescribed %>%
 map_variation_ECP_prescribed
 ```
 
-
-```{r}
-# calculate the ratio of Lev to Uli prescribed 
-variation_ECP_prescribed_v2 <- ECP_scripts %>% 
-  group_by(gp_practice,drug) %>% 
-  # calculate the total of Lev and Uli prescribed per health board
-  summarise(total_each_drug_type = sum(paid_quantity, na.rm = TRUE)) %>%
-  drop_na(drug) %>% 
-  #pivot_wider to move drug names to columns 
-  pivot_wider(names_from = drug, values_from = total_each_drug_type) %>%
-  clean_names() %>% # consistency 
-  mutate(levo_to_uli_ratio = levonorgestrel / (levonorgestrel + ulipristal_acetate)) %>% # calculate ratio %>% 
-  drop_na(levo_to_uli_ratio) %>% 
-  full_join(ECP_GP)
-
-# make bar chart
-ECP_SIMD_barchart_variations <- variation_ECP_prescribed_v2 %>%
-  #group_by(simd2020v2hb_decile, drug) %>%
-  ggplot(aes(x = factor(simd2020v2hb_decile, levels = 1:10), y = levo_to_uli_ratio, fill = drug)) +
-  geom_col() +
-  scale_fill_brewer(palette = "Set2", name = "Drug Type") +  # add colour palette
-  labs(
-    title = "Variation in prescribing practise by SIMD",
-    subtitle = "",
-    x = "SIMD Decile \n (1 = Most Deprived, 10 = Least Deprived)",
-    y = "prescriptions",
-    fill = "Drug") +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-    plot.subtitle = element_text(size = 12, hjust = 0.5),
-    axis.title.x = element_text(size = 12),
-    axis.title.y = element_text(size = 12),
-    axis.text.x = element_text(size = 10, angle = 45, hjust = 1),
-    axis.text.y = element_text(size = 10),
-    legend.position = "right",
-    legend.title = element_text(size = 12, face = "bold"),
-    legend.text = element_text(size = 10))
-
-ECP_SIMD_barchart_variations
-  
-```
-
-
 ## Conclusion 
+
+prescribing choices are determined by geography, deprivation, age 
 
 ### Recommendations from analysis 
 
 ### Limitations of the dataset and suggestions for future analysis
-
-
-
+additional time and data - directed acyclical graphic to explore this further
+explore the statistical relationships. 
 
 ## References 
 I used https://gsverhoeven.github.io/post/zotero-rmarkdown-csl/ to set up citations. Chosen BMJ style as common. 
