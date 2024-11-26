@@ -2,7 +2,6 @@
 title: "Assessment: Exploratory Analysis of the Factors Influencing Emergency Contraceptive Prescribing in Scotland"
 author: "B273025"
 date: "`r Sys.Date()`"
-bibliography: "../references.json"
 link-citations: true
 output: 
   html_document:
@@ -18,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache=FALSE
 
 # Introduction 
 
-Preventing unintended pregnancy is critical for individual well-being and public health. Unprotected sex occurs for multiple, complex reasons including sexual assault, reproductive coercion, contraceptive mishaps, and lapses in contraceptive use @cleland_etal14 . Emergency contraception prevents pregnancy following unprotected sex or contraceptive failure. In Scotland emergency contraception is available as either a pill or intrauterine device. Oral contraceptives are the most commonly used, making up 90% of emergency contraceptive prescriptions@Emergency23. 
+Preventing unintended pregnancy is critical for individual well-being and public health. Unprotected sex occurs for multiple, complex reasons including sexual assault, reproductive coercion, contraceptive mishaps, and lapses in contraceptive use (1). Emergency contraception prevents pregnancy following unprotected sex or contraceptive failure. In Scotland emergency contraception is available as either a pill or intrauterine device. Oral contraceptives are the most commonly used, making up 90% of emergency contraceptive prescriptions (2). 
 
 Pharmacies in Scotland dispense two types of emergency contraceptive pills (ECP):
 
@@ -190,13 +189,13 @@ Interesting trends to note include:
 
 * **Levonorgestrel is more commonly prescribed than Ulipristal Acetate.** Each month an average of 150 prescriptions of Levonorgestrel and 3 prescriptions of Ulipristal Acetate are dispensed per 100,000 women across Scotland. 
 
-* **The prescribing rate of Levonorgestrel has decreased annually between 2019 and 2022.** This trend may reflect public health efforts to promote long-acting reversible contraception (LARC), thereby reducing the need for ECP. @Long Alternatively it could result from challenges in accessing ECP during the Covid-19 pandemic. 
+* **The prescribing rate of Levonorgestrel has decreased annually between 2019 and 2022.** This trend may reflect public health efforts to promote long-acting reversible contraception (LARC), thereby reducing the need for ECP (3). Alternatively it could result from challenges in accessing ECP during the Covid-19 pandemic. 
 
-* **A significnat reduction in Ulipristal Acetate prescriptions is observed from 2020 onwards.** Due to low prescribing rates of Ulipristal Acetate there is some stochastic variation however the downward trend in 2020 is clear. This likely correspounds to the European Medicines Agency's 2020 guidance recommending teh withdrawal of Ulipristal Acetate for the treatment for uterine fibroids due to safety concerns. From 2020, prescriptions of Ulipristal Acetate appear specific to ECP use only. @Ulipristal20   
+* **A significant reduction in Ulipristal Acetate prescriptions is observed from 2020 onwards.** Due to low prescribing rates of Ulipristal Acetate there is some stochastic variation however the downward trend in 2020 is clear. This likely corresponds to the European Medicines Agency's 2020 guidance recommending the withdrawal of Ulipristal Acetate for the treatment for uterine fibroids due to safety concerns. From 2020, prescriptions of Ulipristal Acetate appear specific to ECP use only (4).  
 
-* Seasonal peaks are obserevd in the summer months of all years. This suggests an increased demand for ECP during what could be described as a **'Summer of Love'**.
+* Seasonal peaks are observed in the summer months of all years. This suggests an increased demand for ECP during what could be described as a **'Summer of Love'**.
 
-* **A marked decline in Levonorgestrel prescriptions ocurred between February and May of 2020.** This coincides with the Phase 1 Covid-19 lockdown, suggestring that national lockdown may have reduced opportunities for unprotected sexual intercourse. 
+* **A marked decline in Levonorgestrel prescriptions ocurred between February and May of 2020.** This coincides with the Phase 1 Covid-19 lockdown, suggesting that national lockdown may have reduced opportunities for unprotected sexual intercourse. 
 
 ## How does the ECP prescription rate vary by Health Board regions in Scotland? 
 
@@ -258,7 +257,7 @@ Key points to note:
 
 * **NHS Greater Glasgow and Clyde and NHS Lothian have the highest annual ECP prescription rate.** These regions encompass Scotland's largest cities, Glasgow and Edinburgh, which may contribute to higher demand for ECP services.
 
-* **Health boards with higher ECP prescription rates generally have a higher proportion of young people.** This suggests that young people aged 16 to 34 years are more likely to require emergency contraception, in keeping with current literature.@mehta_etal22 
+* **Health boards with higher ECP prescription rates generally have a higher proportion of young people.** This suggests that young people aged 16 to 34 years are more likely to require emergency contraception, in keeping with current literature (5). 
 
 * **NHS Ayrshire and Arran is an outlier.** Despite having the third highest ECP prescription rate, it has a relatively smaller population of young people (19%). This warrants further exploration, as it may indicate greater use of ECP services by under 16s or over 35s in this region helping to guide targeted interventions.  
 
@@ -420,5 +419,10 @@ This report highlights significant disparities in the prescribing of emergency c
 * It would be interesting to conduct statistical analysis to explore the trends in this report. 
 
 # References 
-I linked this rmd to Zotero Referencing Software to produce in text citations with an updating bibliography. I chose to format my refernces in BMJ house style as this is commonly used in medical literature.
+
+1. 	Cleland K, Raymond EG, Westley E, Trussell J. Emergency contraception review: evidence-based recommendations for clinicians. Clin Obstet Gynecol [Internet]. 2014 Dec [cited 2024 Nov 25];57(4):741–50. Available from: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4216625/
+2. 	Emergency Contraceptive Statistics 2023 | Click2Pharmacy [Internet]. 2023 [cited 2024 Nov 25]. Available from: https://click2pharmacy.co.uk/emergency-contraceptive-statistics-2023/
+3. 	Long Acting Reversible Methods of Contraception (LARC) in Scotland - Year ending 31 March 2022 - Long Acting Reversible Contraception (LARC) Key Clinical Indicator (KCI) - Publications - Public Health Scotland [Internet]. [cited 2024 Nov 25]. Available from: https://publichealthscotland.scot/publications/long-acting-reversible-contraception-larc-key-clinical-indicator-kci/long-acting-reversible-methods-of-contraception-larc-in-scotland-year-ending-31-march-2022/
+4. 	Ulipristal acetate 5mg medicinal products - referral | European Medicines Agency (EMA) [Internet]. 2020 [cited 2024 Nov 25]. Available from: https://www.ema.europa.eu/en/medicines/human/referrals/ulipristal-acetate-5mg-medicinal-products
+5. 	Mehta SD, Kulkarni AD, Pazol K, Koumans EH. Trends in Emergency Contraceptive Use Among Adolescents and Young Adults, 2006–2017. J Adolesc Health Off Publ Soc Adolesc Med [Internet]. 2022 Jul [cited 2024 Nov 25];71(1):86–93. Available from: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10982874/
 
